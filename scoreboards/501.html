@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Page Title</title>
+    <link rel="stylesheet" href="/assets/bootstrap.min.css">
+    <style>
+        ul,
+        li {
+            list-style: none;
+            display: inline;
+        }
+        
+        .score {
+            background-color: #4e5d6c;
+        }
+        
+        .score .header {
+            background-color: #485563;
+            margin: 0;
+            padding: 15px;
+            text-align: center;
+            font-size: 30pt;
+        }
+        
+        .score .sum {
+            font-size: 75pt;
+            text-align: center;
+        }
+        
+        .score .table {
+            display: flex;
+            justify-content: center;
+        }
+
+        .table-container{
+            background-color: #485563;
+        }
+        
+        .score .table ul {
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .score .table li {
+            font-size: 20pt;
+            margin: 0 5px;
+        }
+        
+        .big {
+            font-size: 35pt !important;
+            margin-left: 30px;
+        }
+    </style>
+
+    <script src="/assets/vue226.js"></script>
+    <script>
+        var scoreBoardApp;
+
+        window.onload = function(){
+
+            var socket = new WebSocket('ws://localhost:8080/ws');
+
+            socket.onopen = function() {
+                socket.onmessage = function(response) {
+
+                    var command = JSON.parse(response.data)
+                    
+                    if (command.command == "start") {
+                        scoreBoardApp.setGame(command.game)
+                    }
+
+                    if (command.command == "insert_throw") {
+                        if ( scoreBoardApp.game.players[command.playerId].rounds[command.roundId] == undefined ){
+                            scoreBoardApp.game.players[command.playerId].rounds[command.roundId] = Vue.util.extend({}, scoreBoardApp.round)
+                            scoreBoardApp.game.players[command.playerId].rounds[command.roundId].throws.push
+                        }
+                        scoreBoardApp.game.players[command.playerId].rounds[command.roundId].throws.push(command.throw)
+                    }
+
+                };
+
+            }
+
+            scoreBoardApp = new Vue({
+                el: '#scoreboard',
+                delimiters: ['{%', '%}'],
+                data: {
+                    round: { throws: {} },
+                    score: { id: '', score: 501},
+                    scores: [],
+                    game: null,
+                },
+                computed: {
+                    players: function (){
+                        if (this.game == null){
+                            return []
+                        }
+
+                        var sortable = [];
+                        for (var p in this.game.players) {
+                            sortable.push({id: p,elem: this.game.players[p] });
+                        }
+
+                        sortable.sort(function(a, b) {
+                            return a.id < b.id;
+                        });
+
+                        return sortable;
+                    }
+                },
+                methods: {
+                    setGame: function(data){
+                        this.game = data;
+                        //var keys = Object.keys(game.Players);
+                        //for ( var i = 0; i <= keys.length; i++ ){
+                        //    score += ( round[keys[i]] != undefined ) ? round[keys[i]].Score : 0;
+                        //}
+                        //this.players.push(Vue.util.extend({}, this.score));
+                    },
+                    modifierClass: function(m){
+                        if (m == 0){
+                            return 'label-default';
+                        }
+                        if (m == 1){
+                            return 'label-success';
+                        }
+                        if (m == 2){
+                            return 'label-danger';
+                        }
+                    },
+                    roundScore: function(round){
+                        var score = 0;
+                        var keys = Object.keys(round);
+                        for ( var i = 0; i <= keys.length; i++ ){
+                            thr = round[keys[i]];
+                            score += ( thr != undefined ) ? (thr.score*(thr.modifier+1)) : 0;
+                        }
+                        return score;
+                    },
+                    playerScore: function(id){
+                        var score = 501;
+                        for (var round in this.game.players[id].rounds){
+                            for (var thr in this.game.players[id].rounds[round].throws){
+                                var t = this.game.players[id].rounds[round].throws[thr];
+                                score -= (t.score*(t.modifier+1));
+                            }
+                        }
+
+                        return score;
+                    }
+                }
+            })
+
+
+        }
+        
+    </script>
+</head>
+
+<body>
+
+    <div class="container" id="scoreboard">
+        <div class="row">
+            <h1 style="text-align: center;">501 game</h1>
+        </div>
+
+        <div class="row">
+
+
+            <div class="col-md-6" v-for="player in players">
+
+                <div class="score">
+                    <div class="header" v-text="player.elem.name"></div>
+
+                    <div class="sum" v-text="playerScore(player.id)"></div>
+
+                    <div class="table-container">
+                        <div class="table" v-for="round in player.elem.rounds">
+                        <ul>
+                            <li v-for="(thr, index) in round.throws">
+                                <span class="label" v-text="thr.score" :class="modifierClass(thr.modifier)"></span>
+                            </li>
+                            <li class="big" v-text="roundScore(round.throws)"></li>
+                        </ul>
+                    </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+        </div>
+    </div>
+
+</body>
+
+</html>

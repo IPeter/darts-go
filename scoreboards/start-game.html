@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Page Title</title>
+    <link rel="stylesheet" href="/assets/bootstrap.min.css">
+    <style>
+
+    </style>
+
+    <script src="/assets/vue226.js"></script>
+    <script src="/assets/axios.js"></script>
+    <script>
+ 
+        var playerListApp;
+
+        window.onload = function(){
+
+            playerListApp = new Vue({
+                el: '#playerList',
+                delimiters: ['{%', '%}'],
+                data: {
+                    player: {
+                        name: ''
+                    },
+                    players: []
+                },
+                methods: {
+                    addNewPlayerToList: function(){
+                        axios.get('/game/player?name='+this.player.name)
+                        .then(function (response) {
+                            console.log(response);
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });                        
+
+                        this.players.push(Vue.util.extend({}, this.player));
+                        this.player.name = '';
+                    },
+                    startGame: function(){
+                        window.location.replace('/game/scoreboard')
+                    }
+                }
+            })
+
+        }
+
+    </script>
+</head>
+
+<body>
+
+    <div class="container" id="playerList">
+        <div class="row">
+            <h1 style="text-align: center;">Start game</h1>
+        </div>
+
+        <div class="row">
+
+
+            <div class="col-md-6">
+
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Player</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="p in players">
+                            <td>1</td>
+                            <td>{% p.name %}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+            <div class="col-md-6" style="background-color: #4e5d6c;">
+                <form class="form-horizontal" v-on:submit.prevent="">
+                    <fieldset>
+                        <legend>Add new Player</legend>
+                        <div class="form-group">
+                            <label for="inputName" class="col-lg-2 control-label">Name</label>
+                            <div class="col-lg-10">
+                                <input type="text" class="form-control" id="inputName" placeholder="Name" v-model="player.name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-10 col-lg-offset-2">
+                                <button @click="addNewPlayerToList" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+
+
+
+        </div>
+
+        <div style="display: flex; justify-content: center; margin-top: 50px;">
+            <button class="btn btn-lg btn-primary" @click="startGame">START</button>
+        </div>
+    </div>
+
+</body>
+
+</html>
