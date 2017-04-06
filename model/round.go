@@ -1,14 +1,18 @@
 package model
 
+import "github.com/google/uuid"
+
 type Round struct {
-	Throws  map[string]*Throw `json:"throws"`
+	ID      string         `json:"id"`
+	Throws  map[int]*Throw `json:"throws"`
 	current int
 	max     int
 }
 
 func NewRound() *Round {
 	return &Round{
-		Throws:  make(map[string]*Throw, 3),
+		ID:      uuid.New().String(),
+		Throws:  make(map[int]*Throw, 3),
 		current: 0,
 		max:     3,
 	}

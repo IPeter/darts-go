@@ -5,22 +5,22 @@ import (
 )
 
 type Player struct {
-	ID           string            `json:"id"`
-	Name         string            `json:"name"`
-	Rounds       map[string]*Round `json:"rounds"`
-	currentRound string
+	ID           string         `json:"id"`
+	Name         string         `json:"name"`
+	Rounds       map[int]*Round `json:"rounds"`
+	currentRound int
 }
 
 func NewPlayer(name string) *Player {
 	return &Player{
 		ID:           uuid.New().String(),
 		Name:         name,
-		currentRound: "",
-		Rounds:       make(map[string]*Round, 20),
+		currentRound: 0,
+		Rounds:       make(map[int]*Round, 20),
 	}
 }
 
-func (p *Player) GetCurrentRoundID() string {
+func (p *Player) GetCurrentRoundID() int {
 	return p.currentRound
 }
 
@@ -41,9 +41,10 @@ func (p *Player) HasMoreThrow() bool {
 }
 
 func (p *Player) IncRound() {
-	p.currentRound = uuid.New().String()
+	p.currentRound++
 }
 
 func (p *Player) SetThrow(t *Throw) {
-	p.Rounds[p.currentRound].Throws[t.ID] = t
+	pos := len(p.Rounds[p.currentRound].Throws)
+	p.Rounds[p.currentRound].Throws[pos] = t
 }

@@ -12,11 +12,11 @@ const (
 )
 
 type Game struct {
-	ID            uuid.UUID          `json:"id"`
-	Name          string             `json:"name"`
-	Players       map[string]*Player `json:"players"`
-	Status        int                `json:"status"`
-	currentPlayer string
+	ID            uuid.UUID       `json:"id"`
+	Name          string          `json:"name"`
+	Players       map[int]*Player `json:"players"`
+	Status        int             `json:"status"`
+	currentPlayer int
 	maxPlayer     int
 }
 
@@ -24,26 +24,23 @@ func NewGame() *Game {
 	return &Game{
 		ID:            uuid.New(),
 		Status:        StatusCreate,
-		currentPlayer: "",
+		currentPlayer: 0,
 		maxPlayer:     2,
 		Name:          "501",
-		Players:       make(map[string]*Player, 2),
+		Players:       make(map[int]*Player, 2),
 	}
 }
 
 func (g *Game) SetPlayer(player *Player) {
-	if len(g.Players) < 1 {
-		g.currentPlayer = player.ID
-	}
-
-	g.Players[player.ID] = player
+	pos := len(g.Players)
+	g.Players[pos] = player
 }
 
 func (g *Game) GetCurrentPlayer() *Player {
 	return g.Players[g.currentPlayer]
 }
 
-func (g *Game) GetCurrentPlayerId() string {
+func (g *Game) GetCurrentPlayerId() int {
 	return g.currentPlayer
 }
 

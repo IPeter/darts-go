@@ -34,13 +34,11 @@ func SetPlayer(player *model.Player) {
 func Throw(c *model.CamCommand) {
 	player := GetGame().GetCurrentPlayer()
 	if player.HasMoreThrow() == false {
+		player.IncRound()
+
 		GetGame().NextPlayer()
 
 		player = GetGame().GetCurrentPlayer()
-	}
-
-	if player.GetCurrentRoundID() == "" {
-		player.IncRound()
 	}
 
 	thr := &model.Throw{
@@ -60,7 +58,7 @@ func Throw(c *model.CamCommand) {
 		Command:  WebsocketInsertThrow,
 		ID:       thr.ID,
 		PlayerID: player.ID,
-		RoundID:  player.GetCurrentRoundID(),
+		RoundID:  player.GetCurrentRound().ID,
 		Thr:      thr,
 	})
 

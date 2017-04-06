@@ -34,6 +34,8 @@
         }
 
         .table-container{
+            display: flex;
+            flex-direction: column-reverse;
             background-color: #485563;
         }
         
@@ -54,6 +56,7 @@
     </style>
 
     <script src="/assets/vue226.js"></script>
+    <script src="/assets/underscore.js"></script>
     <script>
         var scoreBoardApp;
 
@@ -71,11 +74,23 @@
                     }
 
                     if (command.command == "insert_throw") {
-                        if ( scoreBoardApp.game.players[command.playerId].rounds[command.roundId] == undefined ){
-                            scoreBoardApp.game.players[command.playerId].rounds[command.roundId] = Vue.util.extend({}, scoreBoardApp.round)
-                            scoreBoardApp.game.players[command.playerId].rounds[command.roundId].throws.push
+
+                        var round = _.find(scoreBoardApp.rounds, function(itm){ return itm.id == command.roundId })
+
+                        if ( round == undefined || round == null ){
+                            scoreBoardApp.roundModel.id = command.roundId
+                            scoreBoardApp.roundModel.playerId = command.playerId
+                            scoreBoardApp.roundModel.throws = []
+
+                            round = Vue.util.extend({}, scoreBoardApp.roundModel)
+                            scoreBoardApp.rounds.push(round)
                         }
-                        scoreBoardApp.game.players[command.playerId].rounds[command.roundId].throws.push(command.throw)
+
+                        scoreBoardApp.throwModel.id = command.throw.id
+                        scoreBoardApp.throwModel.score = command.throw.score
+                        scoreBoardApp.throwModel.modifier = command.throw.modifier
+
+                        round.throws.push(Vue.util.extend({}, scoreBoardApp.throwModel))
                     }
 
                 };
@@ -86,37 +101,41 @@
                 el: '#scoreboard',
                 delimiters: ['{%', '%}'],
                 data: {
-                    round: { throws: {} },
+                    roundModel: {id: '', playerId: '', throws: []},
+                    throwModel: { id: '', score: 0, modifier: 0 },
                     score: { id: '', score: 501},
+                    playerModel: { id: '', name: '' },
+                    players: [],
+                    rounds: [],
                     scores: [],
-                    game: null,
                 },
                 computed: {
-                    players: function (){
-                        if (this.game == null){
-                            return []
-                        }
-
-                        var sortable = [];
-                        for (var p in this.game.players) {
-                            sortable.push({id: p,elem: this.game.players[p] });
-                        }
-
-                        sortable.sort(function(a, b) {
-                            return a.id < b.id;
-                        });
-
-                        return sortable;
-                    }
                 },
                 methods: {
                     setGame: function(data){
-                        this.game = data;
-                        //var keys = Object.keys(game.Players);
-                        //for ( var i = 0; i <= keys.length; i++ ){
-                        //    score += ( round[keys[i]] != undefined ) ? round[keys[i]].Score : 0;
-                        //}
-                        //this.players.push(Vue.util.extend({}, this.score));
+
+                        _.each(data.players, function(player){
+                            scoreBoardApp.playerModel.id = player.id
+                            scoreBoardApp.playerModel.name = player.name
+                            scoreBoardApp.players.push(Vue.util.extend({}, scoreBoardApp.playerModel))
+
+                            _.each(player.rounds, function(round){
+                                scoreBoardApp.roundModel.id = round.id
+                                scoreBoardApp.roundModel.playerId = player.id
+
+                                scoreBoardApp.roundModel.throws = []
+                                _.each(round.throws, function(thr){
+                                    scoreBoardApp.throwModel.id = thr.id
+                                    scoreBoardApp.throwModel.score = thr.score
+                                    scoreBoardApp.throwModel.modifier = thr.modifier
+
+                                    scoreBoardApp.roundModel.throws.push(Vue.util.extend({}, scoreBoardApp.throwModel))
+                                })
+
+                                scoreBoardApp.rounds.push(Vue.util.extend({}, scoreBoardApp.roundModel))
+                            })
+                        })
+
                     },
                     modifierClass: function(m){
                         if (m == 0){
@@ -129,23 +148,32 @@
                             return 'label-danger';
                         }
                     },
-                    roundScore: function(round){
+                    playerRounds: function(playerId){
+                        var rounds =  _.filter(scoreBoardApp.rounds, function(item) {
+                            return item.playerId == playerId; 
+                        })
+
+                        return rounds
+                    },
+                    roundScore: function(roundId){
                         var score = 0;
-                        var keys = Object.keys(round);
-                        for ( var i = 0; i <= keys.length; i++ ){
-                            thr = round[keys[i]];
-                            score += ( thr != undefined ) ? (thr.score*(thr.modifier+1)) : 0;
-                        }
+                        var round = _.find(scoreBoardApp.rounds, function(item){
+                            return item.id == roundId
+                        })
+
+                        _.each(round.throws, function(thr){
+                            score += (thr.score * (thr.modifier+1))
+                        })
+
                         return score;
                     },
-                    playerScore: function(id){
+                    playerScore: function(playerId){
                         var score = 501;
-                        for (var round in this.game.players[id].rounds){
-                            for (var thr in this.game.players[id].rounds[round].throws){
-                                var t = this.game.players[id].rounds[round].throws[thr];
-                                score -= (t.score*(t.modifier+1));
-                            }
-                        }
+                        var playerRounds = scoreBoardApp.playerRounds(playerId)
+
+                        _.each(playerRounds, function(round){
+                            score -= scoreBoardApp.roundScore(round.id)
+                        })
 
                         return score;
                     }
@@ -171,17 +199,17 @@
             <div class="col-md-6" v-for="player in players">
 
                 <div class="score">
-                    <div class="header" v-text="player.elem.name"></div>
+                    <div class="header" v-text="player.name"></div>
 
                     <div class="sum" v-text="playerScore(player.id)"></div>
 
                     <div class="table-container">
-                        <div class="table" v-for="round in player.elem.rounds">
+                        <div class="table" v-for="round in playerRounds(player.id)">
                         <ul>
-                            <li v-for="(thr, index) in round.throws">
+                            <li v-for="thr in round.throws">
                                 <span class="label" v-text="thr.score" :class="modifierClass(thr.modifier)"></span>
                             </li>
-                            <li class="big" v-text="roundScore(round.throws)"></li>
+                            <li class="big" v-text="roundScore(round.id)"></li>
                         </ul>
                     </div>
                     </div>

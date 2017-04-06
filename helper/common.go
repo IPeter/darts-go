@@ -5,21 +5,21 @@ import (
 	"sort"
 )
 
-func GetMapPosition(mp interface{}, ky string) (pos int, prev string, next string) {
+func GetMapPosition(mp interface{}, ky int) (pos int, prev int, next int) {
 	k := reflect.ValueOf(mp)
 	if k.Kind() != reflect.Map {
 		panic("Invalid MAP argument!")
 	}
 	t := k.Type()
-	if t.Key().Kind() != reflect.String {
+	if t.Key().Kind() != reflect.Int {
 		panic("Invalid key type!")
 	}
-	var keys []string
+	var keys []int
 	for _, kv := range k.MapKeys() {
-		keys = append(keys, kv.String())
+		keys = append(keys, int(kv.Int()))
 	}
 
-	sort.Strings(keys)
+	sort.Ints(keys)
 
 	for i, k := range keys {
 		if ky == k {
