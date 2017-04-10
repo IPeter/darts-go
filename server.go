@@ -1,10 +1,10 @@
 package main
 
 import (
-	"dartsvader-go/game"
-	"dartsvader-go/handler"
-	"dartsvader-go/model"
-	"dartsvader-go/websocket"
+	"darts-go/game"
+	"darts-go/handler"
+	"darts-go/model"
+	"darts-go/websocket" 
 
 	"github.com/google/uuid"
 	"github.com/olahol/melody"

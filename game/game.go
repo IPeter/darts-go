@@ -1,8 +1,8 @@
 package game
 
 import (
-	"dartsvader-go/model"
-	"dartsvader-go/websocket"
+	"darts-go/model"
+	"darts-go/websocket"
 	"encoding/json"
 
 	"github.com/google/uuid"

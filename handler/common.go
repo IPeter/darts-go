@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"dartsvader-go/model"
+	"darts-go/model"
 	"strconv"
 
 	"gopkg.in/gin-gonic/gin.v1"

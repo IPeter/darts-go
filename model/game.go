@@ -1,7 +1,7 @@
 package model
 
 import (
-	"dartsvader-go/helper"
+	"darts-go/helper"
 
 	"github.com/google/uuid"
 )
