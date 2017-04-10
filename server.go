@@ -11,10 +11,6 @@ import (
 	"gopkg.in/gin-gonic/gin.v1"
 )
 
-type GopherInfo struct {
-	ID, X, Y string
-}
-
 func main() {
 	r := gin.Default()
 	r.Static("/assets", "./scoreboards/assets")
