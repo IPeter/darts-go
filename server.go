@@ -4,11 +4,10 @@ import (
 	"darts-go/game"
 	"darts-go/handler"
 	"darts-go/model"
-	"darts-go/websocket" 
+	"darts-go/websocket"
 
 	"github.com/google/uuid"
 	"github.com/olahol/melody"
-
 	"gopkg.in/gin-gonic/gin.v1"
 )
 

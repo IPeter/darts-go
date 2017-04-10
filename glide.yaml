@@ -1,0 +1,7 @@
+package: darts-go
+import:
+- package: github.com/google/uuid
+  version: "0.2"
+- package: github.com/olahol/melody
+- package: gopkg.in/gin-gonic/gin.v1
+  version: v1.1.4
