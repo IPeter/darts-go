@@ -62,7 +62,7 @@
 
         window.onload = function(){
 
-            var socket = new WebSocket('ws://localhost:8080/ws');
+            var socket = new WebSocket('ws://'+window.location.hostname+':'+window.location.port+'/ws');
 
             socket.onopen = function() {
                 socket.onmessage = function(response) {
