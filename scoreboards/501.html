@@ -185,13 +185,29 @@
 
                         return score;
                     },
+                    isRoundDouble: function(roundId) {
+                        var res = false
+                        var round = _.find(scoreBoardApp.rounds, function(item){
+                            return item.id == roundId
+                        })
+
+                        _.each(round.throws, function(thr){
+                            if (thr.modifier == 2) {
+                                res = true
+                            }
+                        })
+                        return res
+                    },
                     playerScore: function(playerId){
                         var score = 501;
                         var playerRounds = scoreBoardApp.playerRounds(playerId)
 
                         _.each(playerRounds, function(round){
-                            if (score - scoreBoardApp.roundScore(round.id) >= 0) {
+                            if (score - scoreBoardApp.roundScore(round.id) > 0) {
                                 score -= scoreBoardApp.roundScore(round.id)
+                            }
+                            if (score - scoreBoardApp.roundScore(round.id) == 0 && scoreBoardApp.isRoundDouble(round.id)) {
+                                score = "WIN!"
                             }
                         })
 
