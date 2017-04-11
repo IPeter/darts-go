@@ -53,6 +53,12 @@
             font-size: 35pt !important;
             margin-left: 30px;
         }
+
+        .label-out {
+            background-color: #2e2d4c;
+            text-decoration: line-through;
+        }
+
     </style>
 
     <script src="/assets/vue226.js"></script>
@@ -139,12 +145,15 @@
                     },
                     modifierClass: function(m){
                         if (m == 0){
-                            return 'label-default';
+                            return 'label-out';
                         }
                         if (m == 1){
-                            return 'label-success';
+                            return 'label-default';
                         }
                         if (m == 2){
+                            return 'label-success';
+                        }
+                        if (m == 3){
                             return 'label-danger';
                         }
                     },
@@ -162,7 +171,7 @@
                         })
 
                         _.each(round.throws, function(thr){
-                            score += (thr.score * (thr.modifier+1))
+                            score += (thr.score * (thr.modifier))
                         })
 
                         return score;
