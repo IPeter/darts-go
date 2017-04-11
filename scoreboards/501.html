@@ -100,6 +100,10 @@
                         if (scoreBoardApp.playerScore(command.playerId) - (command.throw.score * command.throw.modifier) < 0) {
                             round.status = 0
                         }
+                        if (scoreBoardApp.playerScore(command.playerId) - (command.throw.score * command.throw.modifier) == 0
+                          && command.throw.modifier != 2) {
+                            round.status = 0
+                        }
 
                         round.throws.push(Vue.util.extend({}, scoreBoardApp.throwModel))
                     }
