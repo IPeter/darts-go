@@ -45,6 +45,6 @@ func (p *Player) IncRound() {
 }
 
 func (p *Player) SetThrow(t *Throw) {
-	pos := len(p.Rounds[p.currentRound].Throws)
+	pos := len(p.GetCurrentRound().Throws)
 	p.Rounds[p.currentRound].Throws[pos] = t
 }
