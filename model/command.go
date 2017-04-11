@@ -13,11 +13,11 @@ type CamCommand struct {
 }
 
 func (cc *CamCommand) IsValid() bool {
-	if cc.Modifier >= 0 && cc.Modifier <= 3 {
+	if cc.Modifier >= -1 && cc.Modifier <= 3 {
 		return true
 	}
 
 	return false
 }
 
-// ahol num a szám (1 .. 20, 25)  a modifier pedig: 0, 1, 2, 3. 0: pályán kívüli dobás, 1: sima, 2: dupla, 3: meglepő módon tripp
+// ahol num a szám (1 .. 20, 25)  a modifier pedig: 0, 1, 2, 3. 0: pályán kívüli dobás, 1: sima, 2: dupla, 3: meglepő módon trippla

@@ -33,6 +33,11 @@ func SetPlayer(player *model.Player) {
 
 func Throw(c *model.CamCommand) {
 	player := GetGame().GetCurrentPlayer()
+	if  c.Modifier == -1 {
+		player.IncRound()
+		GetGame().NextPlayer()
+		return
+	}
 	if player.HasMoreThrow() == false {
 		player.IncRound()
 
