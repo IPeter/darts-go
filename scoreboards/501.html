@@ -87,6 +87,7 @@
                             scoreBoardApp.roundModel.id = command.roundId
                             scoreBoardApp.roundModel.playerId = command.playerId
                             scoreBoardApp.roundModel.throws = []
+                            scoreBoardApp.roundModel.status = 1
 
                             round = Vue.util.extend({}, scoreBoardApp.roundModel)
                             scoreBoardApp.rounds.push(round)
@@ -95,6 +96,10 @@
                         scoreBoardApp.throwModel.id = command.throw.id
                         scoreBoardApp.throwModel.score = command.throw.score
                         scoreBoardApp.throwModel.modifier = command.throw.modifier
+
+                        if (scoreBoardApp.playerScore(command.playerId) - (command.throw.score * command.throw.modifier) < 0) {
+                            round.status = 0
+                        }
 
                         round.throws.push(Vue.util.extend({}, scoreBoardApp.throwModel))
                     }
@@ -107,7 +112,7 @@
                 el: '#scoreboard',
                 delimiters: ['{%', '%}'],
                 data: {
-                    roundModel: {id: '', playerId: '', throws: []},
+                    roundModel: {id: '', playerId: '', throws: [], status: 1}, // status: 1 valid, 0: invalid (e.g. too much)
                     throwModel: { id: '', score: 0, modifier: 0 },
                     score: { id: '', score: 501},
                     playerModel: { id: '', name: '' },
@@ -174,6 +179,10 @@
                             score += (thr.score * (thr.modifier))
                         })
 
+                        if (round.status == 0) {
+                            score = 0;
+                        }
+
                         return score;
                     },
                     playerScore: function(playerId){
@@ -181,7 +190,9 @@
                         var playerRounds = scoreBoardApp.playerRounds(playerId)
 
                         _.each(playerRounds, function(round){
-                            score -= scoreBoardApp.roundScore(round.id)
+                            if (score - scoreBoardApp.roundScore(round.id) >= 0) {
+                                score -= scoreBoardApp.roundScore(round.id)
+                            }
                         })
 
                         return score;
