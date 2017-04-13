@@ -25,7 +25,7 @@ func main() {
 	// CAM group
 
 	// GAME group
-	g := r.Group("/game")
+	g := r.Group("/game", handler.NoCache())
 
 	g.GET("player", func(c *gin.Context) {
 		game.SetPlayer(model.NewPlayer(c.Query("name")))
@@ -35,9 +35,21 @@ func main() {
 
 	r.LoadHTMLFiles("scoreboards/501.html", "scoreboards/start-game.html")
 	g.GET("/scoreboard", func(c *gin.Context) {
+		if game.GetGame().Status == model.StatusCreate && len(game.GetGame().Players) < 1 {
+			c.Redirect(301, "/game/start")
+			return
+		} else if game.GetGame().Status == model.StatusCreate {
+			game.GetGame().Status = model.StatusStarted
+		}
+
 		c.HTML(200, "501.html", gin.H{})
 	})
 	g.GET("/start", func(c *gin.Context) {
+		if game.GetGame().Status == model.StatusStarted {
+			c.Redirect(301, "/game/scoreboard")
+			return
+		}
+
 		c.HTML(200, "start-game.html", gin.H{})
 	})
 	g.Static("/start", "")
