@@ -74,9 +74,12 @@
                 socket.onmessage = function(response) {
 
                     var command = JSON.parse(response.data)
-                    
+
                     if (command.command == "start") {
                         scoreBoardApp.setGame(command.game)
+                    }
+                    if (command.command == "restart") {
+                        location.reload(true)
                     }
 
                     if (command.command == "insert_throw") {
@@ -235,13 +238,15 @@
 
         <div class="row">
 
-
             <div class="col-md-6" v-for="player in players">
 
                 <div class="score">
                     <div class="header" v-text="player.name"></div>
 
                     <div class="sum" v-text="playerScore(player.id)"></div>
+                    <div v-if="playerScore(player.id) == 'WIN!'" class="sum">
+                        <a href="/game/end">New game</a>
+                    </div>
 
                     <div class="table-container">
                         <div class="table" v-for="round in playerRounds(player.id)">

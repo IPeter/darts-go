@@ -17,6 +17,7 @@ const (
 	WebsocketStartGame    = "start"
 	WebsocketInsertThrow  = "insert_throw"
 	WebsocketInsertDelete = "delete_throw"
+	WebsocketRestartGame = "restart"
 )
 
 func GetGame() *model.Game {
@@ -68,6 +69,18 @@ func Throw(c *model.CamCommand) {
 	})
 
 	websocket.BroadcastMsg(jsonThr)
+}
+
+func Restart() {
+	g, _ := json.Marshal(struct {
+		Command string      `json:"command"`
+		Game    *model.Game `json:"game"`
+	}{
+		Command: WebsocketRestartGame,
+		Game:    GetGame(),
+	})
+
+	websocket.BroadcastMsg(g)
 }
 
 func WebsocketOnConnectMsg() []byte {

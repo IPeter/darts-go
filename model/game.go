@@ -31,6 +31,14 @@ func NewGame() *Game {
 	}
 }
 
+func (g *Game) Reset() {
+	g.Status =         StatusCreate
+	g.currentPlayer =  0
+	g.maxPlayer =      2
+	g.Name =           "501"
+	g.Players =        make(map[int]*Player, 2)
+}
+
 func (g *Game) SetPlayer(player *Player) {
 	pos := len(g.Players)
 	g.Players[pos] = player

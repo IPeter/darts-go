@@ -22,13 +22,14 @@ func main() {
 
 		c.JSON(200, game.GetGame())
 	})
-	// CAM group
+	// CAM group end
 
 	// GAME group
 	g := r.Group("/game", handler.NoCache())
 
 	g.GET("player", func(c *gin.Context) {
 		game.SetPlayer(model.NewPlayer(c.Query("name")))
+		game.Restart()
 
 		c.JSON(200, game.GetGame())
 	})
@@ -52,8 +53,12 @@ func main() {
 
 		c.HTML(200, "start-game.html", gin.H{})
 	})
+	g.GET("/end", func(c *gin.Context) {
+		game.GetGame().Reset()
+		c.Redirect(301, "/game/start")
+	})
 	g.Static("/start", "")
-	// GAME group
+	// GAME group end
 
 	// WS websocket
 	// https://github.com/olahol/melody
@@ -65,7 +70,7 @@ func main() {
 		wsRoute.HandleRequest(c.Writer, c.Request)
 	})
 
-	// WS websocket
+	// WS websocket end
 
 	r.Run() // listen and serve on 0.0.0.0:8080
 }
