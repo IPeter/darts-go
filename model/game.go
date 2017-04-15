@@ -32,11 +32,11 @@ func NewGame() *Game {
 }
 
 func (g *Game) Reset() {
-	g.Status =         StatusCreate
-	g.currentPlayer =  0
-	g.maxPlayer =      2
-	g.Name =           "501"
-	g.Players =        make(map[int]*Player, 2)
+	g.Status = StatusCreate
+	g.currentPlayer = 0
+	g.maxPlayer = 2
+	g.Name = "501"
+	g.Players = make(map[int]*Player, 2)
 }
 
 func (g *Game) SetPlayer(player *Player) {
@@ -55,4 +55,14 @@ func (g *Game) GetCurrentPlayerId() int {
 func (g *Game) NextPlayer() {
 	_, _, next := helper.GetMapPosition(g.Players, g.currentPlayer)
 	g.currentPlayer = next
+}
+
+func (g *Game) GetPlayerById(id string) (player *Player) {
+	for _, player = range g.Players {
+		if player.ID == id {
+			return
+		}
+	}
+
+	return nil
 }

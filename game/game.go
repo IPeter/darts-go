@@ -17,6 +17,7 @@ const (
 	WebsocketStartGame    = "start"
 	WebsocketInsertThrow  = "insert_throw"
 	WebsocketInsertDelete = "delete_throw"
+	WebsocketEditThrow    = "edit_throw"
 	WebsocketRestartGame  = "restart"
 )
 
@@ -93,4 +94,39 @@ func WebsocketOnConnectMsg() []byte {
 	})
 
 	return g
+}
+
+func EditThrow(playerId string, score int, modifier int, throwId string) *model.Throw {
+	player := GetGame().GetPlayerById(playerId)
+
+	if player == nil {
+		return &model.Throw{}
+	}
+
+	round, thr := player.GetThrowById(throwId)
+
+	if round == nil || thr == nil {
+		return &model.Throw{}
+	}
+
+	thr.Score = score
+	thr.Modifier = modifier
+
+	jsonThr, _ := json.Marshal(struct {
+		Command  string       `json:"command"`
+		ID       string       `json:"id"`
+		PlayerID string       `json:"playerId"`
+		RoundID  string       `json:"roundId"`
+		Thr      *model.Throw `json:"throw"`
+	}{
+		Command:  WebsocketEditThrow,
+		ID:       thr.ID,
+		PlayerID: player.ID,
+		RoundID:  round.ID,
+		Thr:      thr,
+	})
+
+	websocket.BroadcastMsg(jsonThr)
+
+	return thr
 }

@@ -6,6 +6,8 @@ import (
 	"darts-go/model"
 	"darts-go/websocket"
 
+	"strconv"
+
 	"github.com/google/uuid"
 	"github.com/olahol/melody"
 	"gopkg.in/gin-gonic/gin.v1"
@@ -64,6 +66,16 @@ func main() {
 	adm := r.Group("/admin", handler.NoCache())
 	adm.GET("/throws", func(c *gin.Context) {
 		c.HTML(200, "editthrow.html", gin.H{})
+	})
+	adm.GET("/setThrow", func(c *gin.Context) {
+		playerID := c.Query("playerId")
+		score, _ := strconv.Atoi(c.Query("score"))
+		modifier, _ := strconv.Atoi(c.Query("modifier"))
+		throwID := c.Query("throwId")
+
+		thr := game.EditThrow(playerID, score, modifier, throwID)
+
+		c.JSON(200, thr)
 	})
 	// ADMIN group end
 

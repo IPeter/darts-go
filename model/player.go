@@ -48,3 +48,15 @@ func (p *Player) SetThrow(t *Throw) {
 	pos := len(p.GetCurrentRound().Throws)
 	p.Rounds[p.currentRound].Throws[pos] = t
 }
+
+func (p *Player) GetThrowById(id string) (round *Round, thr *Throw) {
+	for _, round = range p.Rounds {
+		for _, thr = range round.Throws {
+			if thr.ID == id {
+				return
+			}
+		}
+	}
+
+	return nil, nil
+}

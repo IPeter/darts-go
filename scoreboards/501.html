@@ -111,6 +111,24 @@
                         round.throws.push(Vue.util.extend({}, scoreBoardApp.throwModel))
                     }
 
+                    if (command.command == "edit_throw") {
+
+                        var round = _.find(scoreBoardApp.rounds, function(itm){ return itm.id == command.roundId })
+
+                        if ( round == undefined || round == null ){
+                            return
+                        }
+
+                        var thr = _.find(round.throws, function(itm){ return itm.id == command.throw.id })
+
+                        thr.id = command.throw.id
+                        thr.score = command.throw.score
+                        thr.modifier = command.throw.modifier
+
+                        // TODO edit has no affect on score logic
+                        // should move to function
+                    }
+
                 };
 
             }
