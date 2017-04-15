@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Page Title</title>
+    <link rel="stylesheet" href="/assets/bootstrap.min.css">
+    <style>
+
+        ::-webkit-scrollbar { 
+            display: none; 
+        }
+
+        #editThrow {
+            height: 100%;
+            display: flex;
+        }
+
+        .big-score-container {
+            margin-top: 50px;
+            display: flex;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .big-name, .big-score {
+            display: block;
+        }
+        .big-name {
+            font-size: 70pt;
+        }
+        .big-score {
+            font-size: 250pt;
+        }
+
+        .big-score-box {
+            display: block;
+            height: 500px;
+            width: 500px;
+        }
+        
+        .score-box {
+            margin: 5px 10px;
+            padding: 10px;
+            min-width: 175px;
+            height: 180px;
+        }
+
+        .score-box span {
+            display: block;
+        }
+
+        .name{
+            font-size: 35pt;
+        }
+
+        .score{
+            font-size: 85pt;
+        }
+
+        .throws-line{
+            display: flex;
+            flex-direction: row;
+            overflow-x: scroll;
+            overflow-y: hidden;
+            margin: 20px;
+        }
+
+        .modifier-btn, .score-list, .send-score {
+            margin-top: 20px;
+        } 
+        .modifier-btn button {
+            font-size: 35pt;
+        }
+
+        .score-list-item {
+            font-size: 40pt;
+            min-width: 120px;
+            min-height: 80px;
+            margin: 10px;
+        }
+
+        .send-score {
+            font-size: 70pt;
+            padding: 0 100px;
+        }
+    </style>
+
+    <script src="/assets/vue226.js"></script>
+    <script src="/assets/underscore.js"></script>
+    <script>
+        var editThrows;
+
+        window.onload = function(){
+
+            var socket = new WebSocket('ws://'+window.location.hostname+':'+window.location.port+'/ws');
+
+            socket.onopen = function() {
+                socket.onmessage = function(response) {
+
+                    var command = JSON.parse(response.data)
+
+                    if (command.command == "start") {
+                        editThrows.setGame(command.game)
+                    }
+
+                    if (command.command == "insert_throw") {
+                        var player = _.find(editThrows.players, function(pl){ return pl.id == command.playerId })
+
+                        editThrows.throwModel.id = command.throw.id
+                        editThrows.throwModel.score = command.throw.score
+                        editThrows.throwModel.modifier = command.throw.modifier
+                        editThrows.throwModel.playerName = player.name
+                        editThrows.throwModel.playerId = player.id
+
+                        editThrows.throws.push(Vue.util.extend({}, editThrows.throwModel))
+                    }
+
+                };
+
+            }
+
+            Vue.filter('reverse', function(value) {
+            // slice to make a copy of array, then reverse the copy
+            return value.slice().reverse();
+            });
+
+            editThrows = new Vue({
+                el: '#editThrow',
+                delimiters: ['{%', '%}'],
+                data: {
+                    throwModel: {id: '', playerName: '', playerId: '', score: 0, modifier: 0 },
+                    playerModel: {id: '', name: '' },
+                    editThrowModel: {id: '', playerName: '', playerId: '', score: 0, modifier: 0, isVisible: false},
+                    players: [],
+                    throws: []
+                },
+                computed: {
+                },
+                methods: {
+                    setGame: function(data){
+
+                        _.each(data.players, function(player){
+                            editThrows.playerModel.id = player.id
+                            editThrows.playerModel.name = player.name
+                            editThrows.players.push(Vue.util.extend({}, editThrows.playerModel))
+
+                            _.each(player.rounds, function(round){
+                                _.each(round.throws, function(thr){
+                                    editThrows.throwModel.id = thr.id
+                                    editThrows.throwModel.score = thr.score
+                                    editThrows.throwModel.modifier = thr.modifier
+                                    editThrows.throwModel.playerName = player.name
+                                    editThrows.throwModel.playerId = player.id
+
+                                    editThrows.throws.push(Vue.util.extend({}, editThrows.throwModel))
+                                })
+                            })
+                        })
+
+                    },
+                    modifierClass: function(m){
+                        if (m == 0){
+                            return 'label-out';
+                        }
+                        if (m == 1){
+                            return 'label-default';
+                        }
+                        if (m == 2){
+                            return 'label-success';
+                        }
+                        if (m == 3){
+                            return 'label-danger';
+                        }
+                    },
+                    changeBigScoreModifier: function(m){
+                        editThrows.editThrowModel.modifier = m
+                    },
+                    changeBigScoreScore: function(s){
+                        editThrows.editThrowModel.score = s
+                    },
+                    saveEditedThrow: function(){
+                        editThrows.editThrowModel.isVisible = false
+                    },
+                    setBigScore: function(thr){
+                        editThrows.editThrowModel.id = thr.id
+                        editThrows.editThrowModel.playerName = thr.playerName
+                        editThrows.editThrowModel.playerId = thr.playerId
+                        editThrows.editThrowModel.score = thr.score
+                        editThrows.editThrowModel.modifier = thr.modifier
+                        editThrows.editThrowModel.isVisible = true
+                    }
+                }
+            })
+
+
+        }
+    </script>
+</head>
+
+<body>
+
+    <div class="container" id="editThrow">
+
+        <div class="row big-score-container" v-show="editThrowModel.isVisible">
+
+            <div class="label big-score-box" :class="modifierClass(editThrowModel.modifier)">
+                <span v-text="editThrowModel.playerName" class="big-name"></span>
+                <span v-text="editThrowModel.score" class="big-score"></span>
+            </div>
+
+            <div class="btn-group modifier-btn" role="group" aria-label="">
+                <button type="button" class="btn btn-default" @click="changeBigScoreModifier(1)">Simple</button>
+                <button type="button" class="btn btn-default" @click="changeBigScoreModifier(2)">Double</button>
+                <button type="button" class="btn btn-default" @click="changeBigScoreModifier(3)">Triple</button>
+            </div>
+
+            <div class="score-list">
+                <button v-for="n in 20" type="button" class="btn btn-default score-list-item" @click="changeBigScoreScore(n)" v-text="n"></button>
+            </div>
+
+            <button type="button" class="btn btn-success send-score" @click="saveEditedThrow()">Save</button>
+
+        </div>
+
+        <nav class="navbar navbar-fixed-bottom">
+            <div class="row throws-line">
+
+                <span class="label score-box" :class="modifierClass(thr.modifier)" v-for="thr in throws" @click="setBigScore(thr)">
+                    <span v-text="thr.playerName" class="name"></span>
+                    <span v-text="thr.score" class="score"></span>
+                </span>
+
+            </div>
+        </nav>
+    </div>
+
+</body>
+
+</html>

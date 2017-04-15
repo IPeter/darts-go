@@ -34,7 +34,7 @@ func main() {
 		c.JSON(200, game.GetGame())
 	})
 
-	r.LoadHTMLFiles("scoreboards/501.html", "scoreboards/start-game.html")
+	r.LoadHTMLFiles("scoreboards/501.html", "scoreboards/start-game.html", "admin/editthrow.html")
 	g.GET("/scoreboard", func(c *gin.Context) {
 		if game.GetGame().Status == model.StatusCreate && len(game.GetGame().Players) < 1 {
 			c.Redirect(301, "/game/start")
@@ -59,6 +59,13 @@ func main() {
 	})
 	g.Static("/start", "")
 	// GAME group end
+
+	// ADMIN group
+	adm := r.Group("/admin", handler.NoCache())
+	adm.GET("/throws", func(c *gin.Context) {
+		c.HTML(200, "editthrow.html", gin.H{})
+	})
+	// ADMIN group end
 
 	// WS websocket
 	// https://github.com/olahol/melody
