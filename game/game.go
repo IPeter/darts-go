@@ -17,7 +17,7 @@ const (
 	WebsocketStartGame    = "start"
 	WebsocketInsertThrow  = "insert_throw"
 	WebsocketInsertDelete = "delete_throw"
-	WebsocketRestartGame = "restart"
+	WebsocketRestartGame  = "restart"
 )
 
 func GetGame() *model.Game {
@@ -34,7 +34,7 @@ func SetPlayer(player *model.Player) {
 
 func Throw(c *model.CamCommand) {
 	player := GetGame().GetCurrentPlayer()
-	if  c.Modifier == -1 {
+	if c.Modifier == -1 {
 		player.IncRound()
 		GetGame().NextPlayer()
 		return
