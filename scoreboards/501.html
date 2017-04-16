@@ -83,7 +83,6 @@
                     }
 
                     if (command.command == "insert_throw") {
-
                         var round = _.find(scoreBoardApp.rounds, function(itm){ return itm.id == command.roundId })
 
                         if ( round == undefined || round == null ){
@@ -100,19 +99,10 @@
                         scoreBoardApp.throwModel.score = command.throw.score
                         scoreBoardApp.throwModel.modifier = command.throw.modifier
 
-                        if (scoreBoardApp.playerScore(command.playerId) - (command.throw.score * command.throw.modifier) < 0) {
-                            round.status = 0
-                        }
-                        if (scoreBoardApp.playerScore(command.playerId) - (command.throw.score * command.throw.modifier) == 0
-                          && command.throw.modifier != 2) {
-                            round.status = 0
-                        }
-
                         round.throws.push(Vue.util.extend({}, scoreBoardApp.throwModel))
                     }
 
                     if (command.command == "edit_throw") {
-
                         var round = _.find(scoreBoardApp.rounds, function(itm){ return itm.id == command.roundId })
 
                         if ( round == undefined || round == null ){
@@ -124,9 +114,6 @@
                         thr.id = command.throw.id
                         thr.score = command.throw.score
                         thr.modifier = command.throw.modifier
-
-                        // TODO edit has no affect on score logic
-                        // should move to function
                     }
 
                 };
@@ -188,7 +175,7 @@
                         }
                     },
                     playerRounds: function(playerId){
-                        var rounds =  _.filter(scoreBoardApp.rounds, function(item) {
+                        var rounds =  _.filter(this.rounds, function(item) {
                             return item.playerId == playerId; 
                         })
 
@@ -196,7 +183,7 @@
                     },
                     roundScore: function(roundId){
                         var score = 0;
-                        var round = _.find(scoreBoardApp.rounds, function(item){
+                        var round = _.find(this.rounds, function(item){
                             return item.id == roundId
                         })
 
@@ -210,29 +197,18 @@
 
                         return score;
                     },
-                    isRoundDouble: function(roundId) {
-                        var res = false
-                        var round = _.find(scoreBoardApp.rounds, function(item){
-                            return item.id == roundId
-                        })
-
-                        _.each(round.throws, function(thr){
-                            if (thr.modifier == 2) {
-                                res = true
-                            }
-                        })
-                        return res
-                    },
                     playerScore: function(playerId){
                         var score = 501;
-                        var playerRounds = scoreBoardApp.playerRounds(playerId)
+                        var playerRounds = this.playerRounds(playerId)
+                        var vApp = this
 
                         _.each(playerRounds, function(round){
-                            if (score - scoreBoardApp.roundScore(round.id) > 0) {
-                                score -= scoreBoardApp.roundScore(round.id)
-                            }
-                            if (score - scoreBoardApp.roundScore(round.id) == 0 && scoreBoardApp.isRoundDouble(round.id)) {
+                            if (score - vApp.roundScore(round.id) > 0) {
+                                score -= vApp.roundScore(round.id)
+                            } else if (score - vApp.roundScore(round.id) == 0 && (_.last(round.throws)).modifier == 2 ) {
                                 score = "WIN!"
+                            } else {
+                                round.status = 0
                             }
                         })
 
@@ -262,9 +238,6 @@
                     <div class="header" v-text="player.name"></div>
 
                     <div class="sum" v-text="playerScore(player.id)"></div>
-                    <div v-if="playerScore(player.id) == 'WIN!'" class="sum">
-                        <a href="/game/end">New game</a>
-                    </div>
 
                     <div class="table-container">
                         <div class="table" v-for="round in playerRounds(player.id)">
