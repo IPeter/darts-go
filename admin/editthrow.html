@@ -87,6 +87,7 @@
     </style>
 
     <script src="/assets/vue226.js"></script>
+    <script src="/assets/axios.js"></script>
     <script src="/assets/underscore.js"></script>
     <script>
         var editThrows;
@@ -110,10 +111,22 @@
                         editThrows.throwModel.id = command.throw.id
                         editThrows.throwModel.score = command.throw.score
                         editThrows.throwModel.modifier = command.throw.modifier
+                        editThrows.throwModel.time = command.throw.time
                         editThrows.throwModel.playerName = player.name
                         editThrows.throwModel.playerId = player.id
 
                         editThrows.throws.push(Vue.util.extend({}, editThrows.throwModel))
+                    }
+
+                    if (command.command == "edit_throw") {
+                        var thr = _.find(editThrows.throws, function(t){ return t.id == command.throw.id })
+
+                        if (thr == undefined){
+                            return
+                        }
+
+                        thr.score = command.throw.score
+                        thr.modifier = command.throw.modifier
                     }
 
                 };
@@ -136,24 +149,30 @@
                     throws: []
                 },
                 computed: {
+                    orderedThrows: function(){
+                        return _.sortBy(this.throws, function(o){ return -Date.parse(o.time) })
+                    },
                 },
                 methods: {
                     setGame: function(data){
 
+                        var vApp = this
+
                         _.each(data.players, function(player){
-                            editThrows.playerModel.id = player.id
-                            editThrows.playerModel.name = player.name
-                            editThrows.players.push(Vue.util.extend({}, editThrows.playerModel))
+                            vApp.playerModel.id = player.id
+                            vApp.playerModel.name = player.name
+                            vApp.players.push(Vue.util.extend({}, vApp.playerModel))
 
                             _.each(player.rounds, function(round){
                                 _.each(round.throws, function(thr){
-                                    editThrows.throwModel.id = thr.id
-                                    editThrows.throwModel.score = thr.score
-                                    editThrows.throwModel.modifier = thr.modifier
-                                    editThrows.throwModel.playerName = player.name
-                                    editThrows.throwModel.playerId = player.id
+                                    vApp.throwModel.id = thr.id
+                                    vApp.throwModel.score = thr.score
+                                    vApp.throwModel.modifier = thr.modifier
+                                    vApp.throwModel.time = thr.time
+                                    vApp.throwModel.playerName = player.name
+                                    vApp.throwModel.playerId = player.id
 
-                                    editThrows.throws.push(Vue.util.extend({}, editThrows.throwModel))
+                                    vApp.throws.push(Vue.util.extend({}, vApp.throwModel))
                                 })
                             })
                         })
@@ -174,21 +193,30 @@
                         }
                     },
                     changeBigScoreModifier: function(m){
-                        editThrows.editThrowModel.modifier = m
+                        this.editThrowModel.modifier = m
                     },
                     changeBigScoreScore: function(s){
-                        editThrows.editThrowModel.score = s
+                        this.editThrowModel.score = s
                     },
                     saveEditedThrow: function(){
-                        editThrows.editThrowModel.isVisible = false
+                        axios.get('/admin/setThrow?playerId='+this.editThrowModel.playerId+'&score='+this.editThrowModel.score
+                                +'&modifier='+this.editThrowModel.modifier+'&throwId='+this.editThrowModel.id)
+                        .then(function (response) {
+                            console.log(response);
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        }); 
+
+                        this.editThrowModel.isVisible = false
                     },
                     setBigScore: function(thr){
-                        editThrows.editThrowModel.id = thr.id
-                        editThrows.editThrowModel.playerName = thr.playerName
-                        editThrows.editThrowModel.playerId = thr.playerId
-                        editThrows.editThrowModel.score = thr.score
-                        editThrows.editThrowModel.modifier = thr.modifier
-                        editThrows.editThrowModel.isVisible = true
+                        this.editThrowModel.id = thr.id
+                        this.editThrowModel.playerName = thr.playerName
+                        this.editThrowModel.playerId = thr.playerId
+                        this.editThrowModel.score = thr.score
+                        this.editThrowModel.modifier = thr.modifier
+                        this.editThrowModel.isVisible = true
                     }
                 }
             })
@@ -226,7 +254,7 @@
         <nav class="navbar navbar-fixed-bottom">
             <div class="row throws-line">
 
-                <span class="label score-box" :class="modifierClass(thr.modifier)" v-for="thr in throws" @click="setBigScore(thr)">
+                <span class="label score-box" :class="modifierClass(thr.modifier)" v-for="thr in orderedThrows" @click="setBigScore(thr)">
                     <span v-text="thr.playerName" class="name"></span>
                     <span v-text="thr.score" class="score"></span>
                 </span>

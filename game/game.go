@@ -4,8 +4,6 @@ import (
 	"darts-go/model"
 	"darts-go/websocket"
 	"encoding/json"
-
-	"github.com/google/uuid"
 )
 
 var (
@@ -48,11 +46,7 @@ func Throw(c *model.CamCommand) {
 		player = GetGame().GetCurrentPlayer()
 	}
 
-	thr := &model.Throw{
-		ID:       uuid.New().String(),
-		Score:    c.Score,
-		Modifier: c.Modifier,
-	}
+	thr := model.NewThrow(c.Score, c.Modifier)
 	player.SetThrow(thr)
 
 	jsonThr, _ := json.Marshal(struct {
