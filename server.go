@@ -20,7 +20,15 @@ func main() {
 	cam := r.Group("/cam")
 
 	cam.GET("/command", handler.ParseCommand(), func(c *gin.Context) {
-		game.Throw(c.MustGet("command").(*model.CamCommand))
+		command := c.MustGet("command").(*model.CamCommand)
+
+		if command.Modifier == model.HandsOnBoard {
+			game.SkipRound()
+		} else if command.Modifier == model.GameEndsWithWinner {
+			game.FinishGame()
+		} else {
+			game.Throw(command)
+		}
 
 		c.JSON(200, game.GetGame())
 	})
@@ -31,33 +39,21 @@ func main() {
 
 	g.GET("player", func(c *gin.Context) {
 		game.SetPlayer(model.NewPlayer(c.Query("name")))
-		game.Restart()
+		game.SendGameDataToClients(game.WebsocketRestartGame)
 
 		c.JSON(200, game.GetGame())
 	})
 
-	r.LoadHTMLFiles("scoreboards/501.html", "scoreboards/start-game.html", "admin/editthrow.html")
+	r.LoadHTMLFiles("scoreboards/501.html", "admin/start-game.html", "admin/editthrow.html")
 	g.GET("/scoreboard", func(c *gin.Context) {
-		if game.GetGame().Status == model.StatusCreate && len(game.GetGame().Players) < 1 {
+		/* if game.GetGame().Status == model.StatusCreate && len(game.GetGame().Players) < 1 {
 			c.Redirect(301, "/game/start")
 			return
 		} else if game.GetGame().Status == model.StatusCreate {
 			game.GetGame().Status = model.StatusStarted
-		}
+		} */
 
 		c.HTML(200, "501.html", gin.H{})
-	})
-	g.GET("/start", func(c *gin.Context) {
-		if game.GetGame().Status == model.StatusStarted {
-			c.Redirect(301, "/game/scoreboard")
-			return
-		}
-
-		c.HTML(200, "start-game.html", gin.H{})
-	})
-	g.GET("/end", func(c *gin.Context) {
-		game.GetGame().Reset()
-		c.Redirect(301, "/game/start")
 	})
 	g.Static("/start", "")
 	// GAME group end
@@ -65,6 +61,11 @@ func main() {
 	// ADMIN group
 	adm := r.Group("/admin", handler.NoCache())
 	adm.GET("/throws", func(c *gin.Context) {
+		if game.GetGame().Status == model.StatusCreate {
+			c.Redirect(301, "/admin/setPlayer")
+			return
+		}
+
 		c.HTML(200, "editthrow.html", gin.H{})
 	})
 	adm.GET("/setThrow", func(c *gin.Context) {
@@ -76,6 +77,18 @@ func main() {
 		thr := game.EditThrow(playerID, score, modifier, throwID)
 
 		c.JSON(200, thr)
+	})
+	adm.GET("/start", func(c *gin.Context) {
+		game.GetGame().Status = model.StatusStarted
+		c.Redirect(301, "/admin/throws")
+	})
+	adm.GET("/saveAndCreateNew", func(c *gin.Context) {
+		game.SaveAndCreate()
+
+		c.Redirect(301, "/admin/setPlayer")
+	})
+	adm.GET("/setPlayer", func(c *gin.Context) {
+		c.HTML(200, "start-game.html", gin.H{})
 	})
 	// ADMIN group end
 

@@ -84,6 +84,12 @@
             font-size: 70pt;
             padding: 0 100px;
         }
+
+        .restart-btn {
+            width: 100%;
+            font-size: 70pt;
+            margin-top: 50px;
+        }
     </style>
 
     <script src="/assets/vue226.js"></script>
@@ -129,6 +135,10 @@
                         thr.modifier = command.throw.modifier
                     }
 
+                    if (command.command == "finish") {
+                        editThrows.showFinishLink = true
+                    }
+
                 };
 
             }
@@ -142,6 +152,7 @@
                 el: '#editThrow',
                 delimiters: ['{%', '%}'],
                 data: {
+                    showFinishLink: false,
                     throwModel: {id: '', playerName: '', playerId: '', score: 0, modifier: 0 },
                     playerModel: {id: '', name: '' },
                     editThrowModel: {id: '', playerName: '', playerId: '', score: 0, modifier: 0, isVisible: false},
@@ -229,6 +240,8 @@
 <body>
 
     <div class="container" id="editThrow">
+
+        <a class="btn btn-primary restart-btn" href="/admin/saveAndCreateNew" v-if="showFinishLink">RESTART GAME</a>
 
         <div class="row big-score-container" v-show="editThrowModel.isVisible">
 

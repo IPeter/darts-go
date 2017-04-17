@@ -1,10 +1,12 @@
 package model
 
 const (
-	ThrowOutOfBoard = 0
-	ThrowNormal     = 1
-	ThrowDouble     = 2
-	ThrowTriple     = 3
+	GameEndsWithWinner = -2
+	HandsOnBoard       = -1
+	ThrowOutOfBoard    = 0
+	ThrowNormal        = 1
+	ThrowDouble        = 2
+	ThrowTriple        = 3
 )
 
 type CamCommand struct {

@@ -62,9 +62,18 @@
     </style>
 
     <script src="/assets/vue226.js"></script>
+    <script src="/assets/axios.js"></script>
     <script src="/assets/underscore.js"></script>
     <script>
         var scoreBoardApp;
+
+        var endGame = function (){
+            axios.get('/cam/command?num=0&modifier=-2')
+            .then(function (response) {
+            })
+            .catch(function (error) {
+            });   
+        }
 
         window.onload = function(){
 
@@ -203,9 +212,12 @@
                         var vApp = this
 
                         _.each(playerRounds, function(round){
+                            round.status = 1
+
                             if (score - vApp.roundScore(round.id) > 0) {
                                 score -= vApp.roundScore(round.id)
                             } else if (score - vApp.roundScore(round.id) == 0 && (_.last(round.throws)).modifier == 2 ) {
+                                endGame()
                                 score = "WIN!"
                             } else {
                                 round.status = 0
@@ -228,6 +240,7 @@
     <div class="container" id="scoreboard">
         <div class="row">
             <h1 style="text-align: center;">501 game</h1>
+            <h1 style="text-align: center;" v-if="players.length == 0">Waiting for game</h1>
         </div>
 
         <div class="row">

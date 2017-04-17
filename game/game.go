@@ -16,6 +16,7 @@ const (
 	WebsocketInsertThrow  = "insert_throw"
 	WebsocketInsertDelete = "delete_throw"
 	WebsocketEditThrow    = "edit_throw"
+	WebsocketFinishGame   = "finish"
 	WebsocketRestartGame  = "restart"
 )
 
@@ -27,17 +28,40 @@ func GetGame() *model.Game {
 	return game
 }
 
+func SendGameDataToClients(command string) {
+	g, _ := json.Marshal(struct {
+		Command string      `json:"command"`
+		Game    *model.Game `json:"game"`
+	}{
+		Command: command,
+		Game:    GetGame(),
+	})
+
+	websocket.BroadcastMsg(g)
+}
+
+func SaveAndCreate() {
+	// SAVE GAME TO DB
+
+	game = model.NewGame()
+	SendGameDataToClients(WebsocketRestartGame)
+}
+
+func FinishGame() {
+	SendGameDataToClients(WebsocketFinishGame)
+}
+
 func SetPlayer(player *model.Player) {
 	GetGame().SetPlayer(player)
 }
 
+func SkipRound() {
+	GetGame().GetCurrentPlayer().IncRound()
+	GetGame().NextPlayer()
+}
+
 func Throw(c *model.CamCommand) {
 	player := GetGame().GetCurrentPlayer()
-	if c.Modifier == -1 {
-		player.IncRound()
-		GetGame().NextPlayer()
-		return
-	}
 	if player.HasMoreThrow() == false {
 		player.IncRound()
 
@@ -64,18 +88,6 @@ func Throw(c *model.CamCommand) {
 	})
 
 	websocket.BroadcastMsg(jsonThr)
-}
-
-func Restart() {
-	g, _ := json.Marshal(struct {
-		Command string      `json:"command"`
-		Game    *model.Game `json:"game"`
-	}{
-		Command: WebsocketRestartGame,
-		Game:    GetGame(),
-	})
-
-	websocket.BroadcastMsg(g)
 }
 
 func WebsocketOnConnectMsg() []byte {
