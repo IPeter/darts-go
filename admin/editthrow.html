@@ -83,6 +83,7 @@
         .send-score {
             font-size: 70pt;
             padding: 0 100px;
+            margin-top: -70px;
         }
 
         .restart-btn {
@@ -258,6 +259,8 @@
 
             <div class="score-list">
                 <button v-for="n in 20" type="button" class="btn btn-default score-list-item" @click="changeBigScoreScore(n)" v-text="n"></button>
+
+                <button type="button" class="btn btn-default score-list-item" @click="changeBigScoreScore(25)">25</button>
             </div>
 
             <button type="button" class="btn btn-success send-score" @click="saveEditedThrow()">Save</button>
