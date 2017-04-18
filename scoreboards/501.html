@@ -59,11 +59,23 @@
             text-decoration: line-through;
         }
 
+        .title {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #qrcode {
+            margin-top: 50px;
+        }
+
     </style>
 
     <script src="/assets/vue226.js"></script>
     <script src="/assets/axios.js"></script>
     <script src="/assets/underscore.js"></script>
+    <script src="/assets/qrcode.min.js"></script>
     <script>
         var scoreBoardApp;
 
@@ -229,6 +241,15 @@
                 }
             })
 
+            var qrcode = new QRCode("qrcode", {
+                text: "http://"+window.location.hostname+':'+window.location.port+'/admin/setPlayer',
+                width: 256,
+                height: 256,
+                colorDark : "#000000",
+                colorLight : "#2b3e50",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
 
         }
         
@@ -238,9 +259,10 @@
 <body>
 
     <div class="container" id="scoreboard">
-        <div class="row">
+        <div class="row title">
             <h1 style="text-align: center;">501 game</h1>
             <h1 style="text-align: center;" v-if="players.length == 0">Waiting for game</h1>
+            <div id="qrcode" v-if="players.length == 0"></div>
         </div>
 
         <div class="row">
