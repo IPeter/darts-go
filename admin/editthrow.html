@@ -71,6 +71,7 @@
         } 
         .modifier-btn button {
             font-size: 35pt;
+            margin: 0px 4px;
         }
 
         .score-list-item {
@@ -81,15 +82,22 @@
         }
 
         .send-score {
-            font-size: 70pt;
-            padding: 0 100px;
-            margin-top: -70px;
+            /*font-size: 60pt;*/
+            /*padding: 0 100px;*/
+            /*margin-top: -70px;*/
+            margin: 0px 4px;
         }
 
         .restart-btn {
             width: 100%;
             font-size: 70pt;
             margin-top: 50px;
+        }
+
+        .top-right {
+            position: relative;
+            top: -8px;
+            right: -8px;
         }
     </style>
 
@@ -222,6 +230,18 @@
 
                         this.editThrowModel.isVisible = false
                     },
+                    saveNewThrow: function(){
+                        axios.get('/cam/command?num='+this.editThrowModel.score
+                                +'&modifier='+this.editThrowModel.modifier)
+                        .then(function (response) {
+                            console.log(response);
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+
+                        this.editThrowModel.isVisible = false
+                    },
                     setBigScore: function(thr){
                         this.editThrowModel.id = thr.id
                         this.editThrowModel.playerName = thr.playerName
@@ -240,7 +260,16 @@
 
 <body>
 
-    <div class="container" id="editThrow">
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Darts-go</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="/admin/saveAndCreateNew">New game</a></li>
+        </ul>
+    </div>
+</nav>    <div class="container" id="editThrow">
 
         <a class="btn btn-primary restart-btn" href="/admin/saveAndCreateNew" v-if="showFinishLink">RESTART GAME</a>
 
@@ -264,7 +293,11 @@
                 <button type="button" class="btn btn-default score-list-item" @click="changeBigScoreScore(25)">25</button>
             </div>
 
-            <button type="button" class="btn btn-success send-score" @click="saveEditedThrow()">Save</button>
+
+            <div class="btn-group modifier-btn" role="group" aria-label="">
+                <button type="button" class="btn btn-success send-score" @click="saveEditedThrow()">Save</button>
+                <button type="button" class="btn btn-success send-score" @click="saveNewThrow()">New</button>
+            </div>
 
         </div>
 
