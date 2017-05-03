@@ -22,4 +22,4 @@ func (cc *CamCommand) IsValid() bool {
 	return false
 }
 
-// ahol num a szám (1 .. 20, 25)  a modifier pedig: 0, 1, 2, 3. 0: pályán kívüli dobás, 1: sima, 2: dupla, 3: meglepő módon trippla
+// where num is a number from: [1 .. 20, 25]  a modifier is in : [-1, 0, 1, 2, 3]. 1: simple, 2: double, 3: triple, 0: out of bounds, -1: darts are removed before the third throw.
