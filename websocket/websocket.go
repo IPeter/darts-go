@@ -18,7 +18,7 @@ type ClientInfo struct {
 	IP string
 }
 
-func Load(connectHandler func(*melody.Session), msgHandler func(*melody.Session)) *melody.Melody {
+func Load(connectHandler func(*melody.Session), msgHandler func(*melody.Session, []byte)) *melody.Melody {
 	wsRoute = melody.New()
 	Clients = make(map[*melody.Session]*ClientInfo)
 	lock = new(sync.Mutex)
@@ -40,7 +40,7 @@ func Load(connectHandler func(*melody.Session), msgHandler func(*melody.Session)
 	wsRoute.HandleMessage(func(s *melody.Session, msg []byte) {
 		lock.Lock()
 		if msgHandler != nil {
-			msgHandler(s)
+			msgHandler(s, msg)
 		}
 		lock.Unlock()
 	})

@@ -111,8 +111,24 @@
 
             var socket = new WebSocket('ws://'+window.location.hostname+':'+window.location.port+'/ws');
 
+            var tm
+            var ping = function(){
+                socket.send('__ping__');
+                tm = setTimeout(function () {
+                    location.reload();
+                }, 1500);
+            }
+
             socket.onopen = function() {
+
+                setInterval(ping, 2000);
+
                 socket.onmessage = function(response) {
+
+                    if (response.data == '__pong__'){
+                        clearTimeout(tm);
+                        return
+                    }
 
                     var command = JSON.parse(response.data)
 

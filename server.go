@@ -8,6 +8,8 @@ import (
 
 	"strconv"
 
+	"log"
+
 	"github.com/google/uuid"
 	"github.com/olahol/melody"
 	"gopkg.in/gin-gonic/gin.v1"
@@ -94,10 +96,17 @@ func main() {
 
 	// WS websocket
 	// https://github.com/olahol/melody
-	wsRoute := websocket.Load(func(s *melody.Session) {
+	connectHandler := func(s *melody.Session) {
 		websocket.Clients[s] = &websocket.ClientInfo{ID: uuid.New(), IP: s.Request.RemoteAddr}
 		s.Write(game.WebsocketOnConnectMsg())
-	}, nil)
+	}
+	msgHandler := func(s *melody.Session, msg []byte) {
+		if string(msg) == "__ping__" {
+			log.Printf("================== PING | PONG ====================")
+			s.Write([]byte("__pong__"))
+		}
+	}
+	wsRoute := websocket.Load(connectHandler, msgHandler)
 	r.GET("/ws", func(c *gin.Context) {
 		wsRoute.HandleRequest(c.Writer, c.Request)
 	})
