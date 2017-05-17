@@ -81,10 +81,18 @@
             margin: 10px;
         }
 
-        .send-score {
+        .send-score, .score-edit-cancel {
             font-size: 50pt !important;
             margin: 0px 4px;
-            margin-top: -70px !important;
+        }
+
+        .send-score.save {
+            min-width: 250px;
+            margin-left: 15px !important;
+        }
+
+        .score-edit-cancel {
+            margin-top: 15px;
         }
 
         .restart-btn {
@@ -181,7 +189,8 @@
                     playerModel: {id: '', name: '' },
                     editThrowModel: {id: '', playerName: '', playerId: '', score: 0, modifier: 0, isVisible: false},
                     players: [],
-                    throws: []
+                    throws: [],
+                    showThrowLane: true
                 },
                 computed: {
                     orderedThrows: function(){
@@ -244,6 +253,7 @@
                         }); 
 
                         this.editThrowModel.isVisible = false
+                        this.showThrowLane = true
                     },
                     saveNewThrow: function(){
                         axios.get('/cam/command?num='+this.editThrowModel.score
@@ -256,6 +266,11 @@
                         });
 
                         this.editThrowModel.isVisible = false
+                        this.showThrowLane = true
+                    },
+                    cancelEditThrow: function(){
+                        this.editThrowModel.isVisible = false
+                        this.showThrowLane = true
                     },
                     setBigScore: function(thr){
                         this.editThrowModel.id = thr.id
@@ -264,6 +279,8 @@
                         this.editThrowModel.score = thr.score
                         this.editThrowModel.modifier = thr.modifier
                         this.editThrowModel.isVisible = true
+
+                        this.showThrowLane = false
                     }
                 }
             })
@@ -310,13 +327,15 @@
 
 
             <div class="btn-group modifier-btn" role="group" aria-label="">
-                <button type="button" class="btn btn-success send-score" @click="saveEditedThrow()">Save</button>
                 <button type="button" class="btn btn-success send-score" @click="saveNewThrow()">New</button>
+                <button type="button" class="btn btn-success send-score save" @click="saveEditedThrow()">Save</button>
             </div>
+
+            <button type="button" class="btn btn-danger score-edit-cancel" @click="cancelEditThrow()">Cancel</button>
 
         </div>
 
-        <nav class="navbar navbar-fixed-bottom">
+        <nav class="navbar navbar-fixed-bottom" v-show="showThrowLane">
             <div class="row throws-line">
 
                 <span class="label score-box" :class="modifierClass(thr.modifier)" v-for="thr in orderedThrows" @click="setBigScore(thr)">
