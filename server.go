@@ -8,8 +8,6 @@ import (
 
 	"strconv"
 
-	"log"
-
 	"github.com/google/uuid"
 	"github.com/olahol/melody"
 	"gopkg.in/gin-gonic/gin.v1"
@@ -102,7 +100,6 @@ func main() {
 	}
 	msgHandler := func(s *melody.Session, msg []byte) {
 		if string(msg) == "__ping__" {
-			log.Printf("================== PING | PONG ====================")
 			s.Write([]byte("__pong__"))
 		}
 	}
