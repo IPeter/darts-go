@@ -3,8 +3,6 @@
 ## BUILD
 
 rPi: env GOOS=linux GOARCH=arm go build server.go
-
-Or download the compiled version from here: https://github.com/IPeter/darts-go/releases
  
 ## RUN
  
