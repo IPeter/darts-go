@@ -13,6 +13,7 @@ var (
 
 const (
 	WebsocketStartGame    = "start"
+	WebsocketGameStarted  = "started"
 	WebsocketInsertThrow  = "insert_throw"
 	WebsocketInsertDelete = "delete_throw"
 	WebsocketEditThrow    = "edit_throw"
