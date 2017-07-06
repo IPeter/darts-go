@@ -16,6 +16,7 @@ import (
 func main() {
 	r := gin.Default()
 	r.Static("/assets", "./scoreboards/assets")
+	r.Static("/static", "./scoreboards/static")
 	// CAM group
 	cam := r.Group("/cam")
 
@@ -46,6 +47,7 @@ func main() {
 
 	r.LoadHTMLFiles("scoreboards/awaiting.html",
 							    "scoreboards/501.html",
+							    "scoreboards/cricket.html",
 									"admin/start-game.html",
 									"admin/editthrow.html")
 
@@ -53,7 +55,7 @@ func main() {
 		if game.GetGame().Status == model.StatusCreate {
 			c.HTML(200, "awaiting.html", gin.H{})
 		} else {
-			c.HTML(200, "501.html", gin.H{})
+			c.HTML(200, game.GetGame().Name + ".html", gin.H{})
 		}
 	})
 	g.Static("/start", "")
@@ -81,6 +83,7 @@ func main() {
 	})
 	adm.GET("/start", func(c *gin.Context) {
 		game.GetGame().Status = model.StatusStarted
+		game.GetGame().Name = c.Query("gameType")
 		game.SendGameDataToClients(game.WebsocketGameStarted)
 		c.Redirect(301, "/admin/throws")
 	})
