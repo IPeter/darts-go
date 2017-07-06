@@ -2,7 +2,7 @@ package websocket
 
 import (
 	"sync"
-
+	"net/http"
 	"github.com/google/uuid"
 	"github.com/olahol/melody"
 )
@@ -20,6 +20,7 @@ type ClientInfo struct {
 
 func Load(connectHandler func(*melody.Session), msgHandler func(*melody.Session, []byte)) *melody.Melody {
 	wsRoute = melody.New()
+	wsRoute.Upgrader.CheckOrigin = func(*http.Request) bool { return true }
 	Clients = make(map[*melody.Session]*ClientInfo)
 	lock = new(sync.Mutex)
 
