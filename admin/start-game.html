@@ -2,7 +2,8 @@
 <html>
 
 <head>
-    <title>Page Title</title>
+    <title>Darts scoreboard admin - start game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="stylesheet" href="/assets/bootstrap.min.css">
     <style>
 
@@ -11,7 +12,7 @@
     <script src="/assets/vue226.js"></script>
     <script src="/assets/axios.js"></script>
     <script>
- 
+
         var playerListApp;
 
         window.onload = function(){
@@ -33,13 +34,16 @@
                         })
                         .catch(function (error) {
                             console.log(error);
-                        });                        
+                        });
 
                         this.players.push(Vue.util.extend({}, this.player));
                         this.player.name = '';
                     },
-                    startGame: function(){
-                        window.location.replace('/admin/start')
+                    start501: function(){
+                        window.location.replace('/admin/start?gameType=501')
+                    },
+                    startCricket: function(){
+                        window.location.replace('/admin/start?gameType=cricket')
                     }
                 }
             })
@@ -102,7 +106,8 @@
         </div>
 
         <div style="display: flex; justify-content: center; margin-top: 50px;">
-            <button class="btn btn-lg btn-primary" @click="startGame">START</button>
+            <button class="btn btn-lg btn-primary" @click="start501">START 501</button>
+            <button class="btn btn-lg btn-primary" @click="startCricket">START Cricket</button>
         </div>
     </div>
 

@@ -2,111 +2,12 @@
 <html>
 
 <head>
-    <title>Page Title</title>
-    <link rel="stylesheet" href="/assets/bootstrap.min.css">
-    <style>
-
-        ::-webkit-scrollbar { 
-            display: none; 
-        }
-
-        #editThrow {
-            height: 100%;
-            display: flex;
-        }
-
-        .big-score-container {
-            margin-top: 20px;
-            display: flex;
-            width: 100%;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-        .big-name, .big-score {
-            display: block;
-        }
-        .big-name {
-            font-size: 70pt;
-        }
-        .big-score {
-            font-size: 225pt;
-        }
-
-        .big-score-box {
-            display: block;
-            height: 410px;
-            width: 500px;
-        }
-        
-        .score-box {
-            margin: 5px 10px;
-            padding: 10px;
-            min-width: 175px;
-            height: 180px;
-        }
-
-        .score-box span {
-            display: block;
-        }
-
-        .name{
-            font-size: 35pt;
-        }
-
-        .score{
-            font-size: 85pt;
-        }
-
-        .throws-line{
-            display: flex;
-            flex-direction: row;
-            overflow-x: scroll;
-            overflow-y: hidden;
-            margin: 20px;
-        }
-
-        .modifier-btn, .score-list, .send-score {
-            margin-top: 20px;
-        } 
-        .modifier-btn button {
-            font-size: 35pt;
-            margin: 0px 4px;
-        }
-
-        .score-list-item {
-            font-size: 40pt;
-            min-width: 120px;
-            min-height: 80px;
-            margin: 10px;
-        }
-
-        .send-score, .score-edit-cancel {
-            font-size: 50pt !important;
-            margin: 0px 4px;
-        }
-
-        .send-score.save {
-            min-width: 250px;
-            margin-left: 15px !important;
-        }
-
-        .score-edit-cancel {
-            margin-top: 15px;
-        }
-
-        .restart-btn {
-            width: 100%;
-            font-size: 70pt;
-            margin-top: 50px;
-        }
-
-        .top-right {
-            position: relative;
-            top: -8px;
-            right: -8px;
-        }
-    </style>
+    <title>Darts scoreboard admin</title>
+    <!--<link rel="stylesheet" href="/assets/bootstrap.min.css">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css?family=Lato&amp;subset=latin-ext" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="/assets/style.css">
 
     <script src="/assets/vue226.js"></script>
     <script src="/assets/axios.js"></script>
@@ -329,13 +230,12 @@
             <div class="btn-group modifier-btn" role="group" aria-label="">
                 <button type="button" class="btn btn-success send-score" @click="saveNewThrow()">New</button>
                 <button type="button" class="btn btn-success send-score save" @click="saveEditedThrow()">Save</button>
+                <button type="button" class="btn btn-danger score-edit-cancel" @click="cancelEditThrow()">Cancel</button>
             </div>
-
-            <button type="button" class="btn btn-danger score-edit-cancel" @click="cancelEditThrow()">Cancel</button>
 
         </div>
 
-        <nav class="navbar navbar-fixed-bottom" v-show="showThrowLane">
+        <nav class="navbar" v-show="showThrowLane">
             <div class="row throws-line">
 
                 <span class="label score-box" :class="modifierClass(thr.modifier)" v-for="thr in orderedThrows" @click="setBigScore(thr)">
