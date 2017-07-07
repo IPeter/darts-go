@@ -14,6 +14,7 @@ const (
 type Game struct {
 	ID            uuid.UUID       `json:"id"`
 	Name          string          `json:"name"`
+	SubType       string          `json:"subType"`
 	Players       map[int]*Player `json:"players"`
 	Status        int             `json:"status"`
 	currentPlayer int
@@ -27,6 +28,7 @@ func NewGame() *Game {
 		currentPlayer: 0,
 		maxPlayer:     2,
 		Name:          "501",
+		SubType:			 "simple",
 		Players:       make(map[int]*Player, 2),
 	}
 }
@@ -36,6 +38,7 @@ func (g *Game) Reset() {
 	g.currentPlayer = 0
 	g.maxPlayer = 2
 	g.Name = "501"
+	g.SubType = "simple"
 	g.Players = make(map[int]*Player, 2)
 }
 

@@ -24,7 +24,9 @@
                     player: {
                         name: ''
                     },
-                    players: []
+                    players: [],
+                    selectedGame: '501',
+                    selectedSubType: 'simple'
                 },
                 methods: {
                     addNewPlayerToList: function(){
@@ -39,11 +41,15 @@
                         this.players.push(Vue.util.extend({}, this.player));
                         this.player.name = '';
                     },
-                    start501: function(){
-                        window.location.replace('/admin/start?gameType=501')
+                    startGame: function(){
+                        window.location.replace('/admin/start?gameType='+selectedGame+'&subType='+selectedSubType)
                     },
-                    startCricket: function(){
-                        window.location.replace('/admin/start?gameType=cricket')
+                    selectGame: function(type){
+                        this.selectedGame = type;
+                        this.selectedSubType = 'simple';
+                    },
+                    selectSubType: function(type){
+                        this.selectedSubType = type;
                     }
                 }
             })
@@ -104,10 +110,21 @@
 
 
         </div>
-
         <div style="display: flex; justify-content: center; margin-top: 50px;">
-            <button class="btn btn-lg btn-primary" @click="start501">START 501</button>
-            <button class="btn btn-lg btn-primary" @click="startCricket">START Cricket</button>
+            <button class="btn btn-lg" v-bind:class="{'btn-primary': selectedGame == '501'}" v-on:click="selectGame('501')">501</button>
+            <button class="btn btn-lg" v-bind:class="{'btn-primary': selectedGame == 'cricket'}" v-on:click="selectGame('cricket')">Cricket</button>
+        </div>
+
+        <div style="display: flex; justify-content: center; margin-top: 50px;" v-if="selectedGame == '501'">
+            <button class="btn btn-lg" v-bind:class="{'btn-primary': selectedSubType == 'simple'}" v-on:click="selectSubType('simple')">501</button>
+            <button class="btn btn-lg" v-bind:class="{'btn-primary': selectedSubType == '301'}" v-on:click="selectSubType('301')">301</button>
+        </div>
+        <div style="display: flex; justify-content: center; margin-top: 50px;" v-if="selectedGame == 'cricket'">
+            <button class="btn btn-lg" v-bind:class="{'btn-primary': selectedSubType == 'simple'}" v-on:click="selectSubType('simple')">Simple</button>
+            <button class="btn btn-lg" v-bind:class="{'btn-primary': selectedSubType == 'cc'}" v-on:click="selectSubType('cc')">Cut-throat</button>
+        </div>
+        <div style="display: flex; justify-content: center; margin-top: 50px;">
+            <button class="btn btn-lg btn-primary" @click="startGame">START GAME</button>
         </div>
     </div>
 

@@ -84,6 +84,7 @@ func main() {
 	adm.GET("/start", func(c *gin.Context) {
 		game.GetGame().Status = model.StatusStarted
 		game.GetGame().Name = c.Query("gameType")
+		game.GetGame().SubType = c.Query("gameSubType")
 		game.SendGameDataToClients(game.WebsocketGameStarted)
 		c.Redirect(301, "/admin/throws")
 	})
