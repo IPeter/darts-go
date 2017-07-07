@@ -42,7 +42,7 @@
                         this.player.name = '';
                     },
                     startGame: function(){
-                        window.location.replace('/admin/start?gameType='+selectedGame+'&subType='+selectedSubType)
+                        window.location.replace('/admin/start?gameType='+this.selectedGame+'&gameSubType='+this.selectedSubType)
                     },
                     selectGame: function(type){
                         this.selectedGame = type;
