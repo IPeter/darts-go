@@ -1,8 +1,38 @@
 # darts-go
 
+## INSTALL
+
+The dependencies are in the glide.yaml. To install them:
+
+Macos:
+
+```bash
+brew install glide
+```
+
+Linux:
+```bash
+curl https://glide.sh/get | sh
+```
+
+If glide is installed, then install the dependencies:
+
+```bash
+export GOPATH=<go_projects> # this contains src and the darts-go project in it
+cd src/darts-go
+glide install
+go build server.go
+```
+
 ## BUILD
 
 rPi: env GOOS=linux GOARCH=arm go build server.go
+
+501.html, main.23d958e1.js and main.b0c96aed.css are generated from
+this project: https://github.com/vassdoki/darts-x01-scoreboard
+
+cricket.html, main.0108a0d6.js and main.c5ba90a2.js are generated from
+this project: https://github.com/adamgyulavari/darts-cricket
  
 ## RUN
  
