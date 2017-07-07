@@ -93,6 +93,10 @@ func main() {
 		c.Redirect(301, "/admin/setPlayer")
 	})
 	adm.GET("/setPlayer", func(c *gin.Context) {
+		if game.GetGame().Status != model.StatusCreate {
+			c.Redirect(301, "/admin/throws")
+			return
+		}
 		c.HTML(200, "start-game.html", gin.H{})
 	})
 	// ADMIN group end
