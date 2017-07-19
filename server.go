@@ -11,12 +11,14 @@ import (
 	"github.com/google/uuid"
 	"github.com/olahol/melody"
 	"gopkg.in/gin-gonic/gin.v1"
+	"net/http"
 )
 
 func main() {
 	r := gin.Default()
 	r.Static("/assets", "./scoreboards/assets")
 	r.Static("/static", "./scoreboards/static")
+	r.Static("/games", "./games/")
 	// CAM group
 	cam := r.Group("/cam")
 
@@ -46,16 +48,15 @@ func main() {
 	})
 
 	r.LoadHTMLFiles("scoreboards/awaiting.html",
-							    "scoreboards/501.html",
-							    "scoreboards/cricket.html",
-									"admin/start-game.html",
-									"admin/editthrow.html")
+			"admin/start-game.html",
+			"admin/editthrow.html")
 
 	g.GET("/scoreboard", func(c *gin.Context) {
 		if game.GetGame().Status == model.StatusCreate {
 			c.HTML(200, "awaiting.html", gin.H{})
 		} else {
-			c.HTML(200, game.GetGame().Name + ".html", gin.H{})
+			//c.HTML(200, "/games/" + game.GetGame().Name + "/index.html", gin.H{})
+			c.Redirect(http.StatusMovedPermanently, "/games/" + game.GetGame().Name + "/index.html")
 		}
 	})
 	g.Static("/start", "")

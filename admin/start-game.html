@@ -26,7 +26,13 @@
                     },
                     players: [],
                     selectedGame: '501',
-                    selectedSubType: 'simple'
+                    gameOption: {
+                        cutThroat: true,
+                        doubleOut: true,
+                        701: true,
+                        501: false,
+                        301: false
+                    }
                 },
                 methods: {
                     addNewPlayerToList: function(){
@@ -42,14 +48,38 @@
                         this.player.name = '';
                     },
                     startGame: function(){
-                        window.location.replace('/admin/start?gameType='+this.selectedGame+'&gameSubType='+this.selectedSubType)
+//                        console.log("startGame: " + this.getGameOptions());
+                        window.location.replace('/admin/start?gameType='+this.selectedGame+'&gameSubType='+this.getGameOptions())
                     },
                     selectGame: function(type){
                         this.selectedGame = type;
-                        this.selectedSubType = 'simple';
                     },
-                    selectSubType: function(type){
-                        this.selectedSubType = type;
+                    getGameOptions: function() {
+                        var types = "";
+                        for(k in this.gameOption) {
+                            if (this.getGameOption(k)) {
+                                types += k + ",";
+                            }
+                        };
+                        return types.replace(/,$/, "");
+                    },
+                    getGameOption: function(key) {
+                        if (this.gameOption.hasOwnProperty(key) && this.gameOption[key] === true) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    },
+                    setGameOption: function(key, unset) {
+                        this.gameOption[key] = true;
+                        if (typeof unset !== 'undefined') {
+                            unset.forEach(function (v) {
+                                this.gameOption[v] = false;
+                            }.bind(this));
+                        }
+                    },
+                    unsetGameOption: function(key) {
+                        this.gameOption[key] = false;
                     }
                 }
             })
@@ -110,18 +140,29 @@
 
 
         </div>
+        <div class="row">
+            <h2 style="text-align: center;">Select game</h2>
+        </div>
         <div style="display: flex; justify-content: center; margin-top: 50px;">
             <button class="btn btn-lg" v-bind:class="{'btn-primary': selectedGame == '501'}" v-on:click="selectGame('501')">501</button>
             <button class="btn btn-lg" v-bind:class="{'btn-primary': selectedGame == 'cricket'}" v-on:click="selectGame('cricket')">Cricket</button>
         </div>
+        <div class="row">
+            <h3 style="text-align: center;">Set game options</h3>
+        </div>
 
         <div style="display: flex; justify-content: center; margin-top: 50px;" v-if="selectedGame == '501'">
-            <button class="btn btn-lg" v-bind:class="{'btn-primary': selectedSubType == 'simple'}" v-on:click="selectSubType('simple')">501</button>
-            <button class="btn btn-lg" v-bind:class="{'btn-primary': selectedSubType == '301'}" v-on:click="selectSubType('301')">301</button>
+            <button class="btn btn-lg" v-bind:class="{'btn-primary': getGameOption('701')}" v-on:click="setGameOption('701', ['501', '301'])">701</button>
+            <button class="btn btn-lg" v-bind:class="{'btn-primary': getGameOption('501')}" v-on:click="setGameOption('501', ['701', '301'])">501</button>
+            <button class="btn btn-lg" v-bind:class="{'btn-primary': getGameOption('301')}" v-on:click="setGameOption('301', ['701', '501'])">301</button>
+        </div>
+        <div style="display: flex; justify-content: center; margin-top: 50px;" v-if="selectedGame == '501'">
+            <button class="btn btn-lg" v-bind:class="{'btn-primary': getGameOption('doubleOut')}" v-on:click="setGameOption('doubleOut')">Double Out</button>
+            <button class="btn btn-lg" v-bind:class="{'btn-primary': !getGameOption('doubleOut')}" v-on:click="unsetGameOption('doubleOut')">Simple</button>
         </div>
         <div style="display: flex; justify-content: center; margin-top: 50px;" v-if="selectedGame == 'cricket'">
-            <button class="btn btn-lg" v-bind:class="{'btn-primary': selectedSubType == 'simple'}" v-on:click="selectSubType('simple')">Simple</button>
-            <button class="btn btn-lg" v-bind:class="{'btn-primary': selectedSubType == 'cc'}" v-on:click="selectSubType('cc')">Cut-throat</button>
+            <button class="btn btn-lg" v-bind:class="{'btn-primary': !getGameOption('cutThroat')}" v-on:click="unsetGameOption('cutThroat')">Simple</button>
+            <button class="btn btn-lg" v-bind:class="{'btn-primary': getGameOption('cutThroat')}" v-on:click="setGameOption('cutThroat')">Cut-throat</button>
         </div>
         <div style="display: flex; justify-content: center; margin-top: 50px;">
             <button class="btn btn-lg btn-primary" @click="startGame">START GAME</button>
