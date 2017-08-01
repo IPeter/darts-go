@@ -71,7 +71,7 @@ func Throw(c *model.CamCommand) {
 		player = GetGame().GetCurrentPlayer()
 	}
 
-	thr := model.NewThrow(c.Score, c.Modifier)
+	thr := model.NewThrow(c.Score, c.Modifier, c.X, c.Y, c.Cam1Img, c.Cam2Img)
 	player.SetThrow(thr)
 
 	jsonThr, _ := json.Marshal(struct {

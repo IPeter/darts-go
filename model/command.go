@@ -12,6 +12,10 @@ const (
 type CamCommand struct {
 	Score    int
 	Modifier int
+	X int
+	Y int
+	Cam1Img string
+	Cam2Img string
 }
 
 func (cc *CamCommand) IsValid() bool {

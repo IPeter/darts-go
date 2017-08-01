@@ -11,8 +11,13 @@ func ParseCommand() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		commandNum, _ := strconv.Atoi(c.Query("num"))
 		commandMod, _ := strconv.Atoi(c.Query("modifier"))
+		x, _ := strconv.Atoi(c.Query("x"))
+		y, _ := strconv.Atoi(c.Query("y"))
+		cam1Img := c.Query("cam2img")
+		cam2Img := c.Query("cam2img")
 
-		c.Set("command", &model.CamCommand{Score: commandNum, Modifier: commandMod})
+
+		c.Set("command", &model.CamCommand{Score: commandNum, Modifier: commandMod, X:x, Y:y, Cam1Img:cam1Img, Cam2Img:cam2Img })
 
 		c.Next()
 	}
