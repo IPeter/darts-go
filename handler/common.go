@@ -13,7 +13,7 @@ func ParseCommand() gin.HandlerFunc {
 		commandMod, _ := strconv.Atoi(c.Query("modifier"))
 		x, _ := strconv.Atoi(c.Query("x"))
 		y, _ := strconv.Atoi(c.Query("y"))
-		cam1Img := c.Query("cam2img")
+		cam1Img := c.Query("cam1img")
 		cam2Img := c.Query("cam2img")
 
 

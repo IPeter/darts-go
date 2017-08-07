@@ -12,6 +12,9 @@ import (
 	"github.com/olahol/melody"
 	"gopkg.in/gin-gonic/gin.v1"
 	"net/http"
+
+	"database/sql"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
@@ -22,6 +25,8 @@ func main() {
 	// CAM group
 	cam := r.Group("/cam")
 
+	db := InitDB("darts.sqlite")
+
 	cam.GET("/command", handler.ParseCommand(), func(c *gin.Context) {
 		command := c.MustGet("command").(*model.CamCommand)
 
@@ -30,7 +35,7 @@ func main() {
 		} else if command.Modifier == model.GameEndsWithWinner {
 			game.FinishGame()
 		} else {
-			game.Throw(command)
+			game.Throw(command, db)
 		}
 
 		c.JSON(200, game.GetGame())
@@ -41,7 +46,7 @@ func main() {
 	g := r.Group("/game", handler.NoCache())
 
 	g.GET("player", func(c *gin.Context) {
-		game.SetPlayer(model.NewPlayer(c.Query("name")))
+		game.SetPlayer(model.NewPlayer(c.Query("name")), db)
 		game.SendGameDataToClients(game.WebsocketRestartGame)
 
 		c.JSON(200, game.GetGame())
@@ -78,7 +83,7 @@ func main() {
 		modifier, _ := strconv.Atoi(c.Query("modifier"))
 		throwID := c.Query("throwId")
 
-		thr := game.EditThrow(playerID, score, modifier, throwID)
+		thr := game.EditThrow(playerID, score, modifier, throwID, db)
 
 		c.JSON(200, thr)
 	})
@@ -86,11 +91,12 @@ func main() {
 		game.GetGame().Status = model.StatusStarted
 		game.GetGame().Name = c.Query("gameType")
 		game.GetGame().SubType = c.Query("gameSubType")
+		game.SaveToDb(db)
 		game.SendGameDataToClients(game.WebsocketGameStarted)
 		c.Redirect(301, "/admin/throws")
 	})
 	adm.GET("/saveAndCreateNew", func(c *gin.Context) {
-		game.SaveAndCreate()
+		game.SaveAndCreate(db)
 
 		c.Redirect(301, "/admin/setPlayer")
 	})
@@ -122,6 +128,13 @@ func main() {
 	// WS websocket end
 
 	r.Run() // listen and serve on 0.0.0.0:8080
+}
+
+func InitDB(filepath string) *sql.DB {
+	db, err := sql.Open("sqlite3", filepath)
+	if err != nil { panic(err) }
+	if db == nil { panic("db nil") }
+	return db
 }
 
 /*

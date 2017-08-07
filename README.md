@@ -24,6 +24,12 @@ glide install
 go build server.go
 ```
 
+Create the sqlite database
+```bash
+sqlite3 darts.sqlite < doc/db-create.sql
+```
+Copy the darts.sqlite file in the same directory as the server.
+
 ## BUILD
 
 rPi: env GOOS=linux GOARCH=arm go build server.go
