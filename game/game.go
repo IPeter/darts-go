@@ -151,7 +151,7 @@ func Throw(c *model.CamCommand, db *sql.DB) {
 		c.Modifier,
 		c.X,
 		c.Y,
-		c.Cam2Img,
+		c.Cam1Img,
 		c.Cam2Img,
 		0,
 		0,
