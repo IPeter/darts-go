@@ -199,7 +199,7 @@
             <a class="navbar-brand" href="#">Darts-go</a>
         </div>
         <ul class="nav navbar-nav">
-            <li class="active"><a href="/admin/saveAndCreateNew">New game</a></li>
+            <li class="active"><a href="/admin/saveAndCreateNew">Új játék</a></li>
         </ul>
     </div>
 </nav>    <div class="container" id="editThrow">
@@ -214,10 +214,10 @@
             </div>
 
             <div class="btn-group modifier-btn" role="group" aria-label="">
-                <button type="button" class="btn btn-default" @click="changeBigScoreModifier(0)">Out</button>
-                <button type="button" class="btn btn-default" @click="changeBigScoreModifier(1)">Simple</button>
-                <button type="button" class="btn btn-default" @click="changeBigScoreModifier(2)">Double</button>
-                <button type="button" class="btn btn-default" @click="changeBigScoreModifier(3)">Triple</button>
+                <button type="button" class="btn btn-default" @click="changeBigScoreModifier(0)">Kint</button>
+                <button type="button" class="btn btn-default" @click="changeBigScoreModifier(1)">Sima</button>
+                <button type="button" class="btn btn-default" @click="changeBigScoreModifier(2)">Dupla</button>
+                <button type="button" class="btn btn-default" @click="changeBigScoreModifier(3)">Trippla</button>
             </div>
 
             <div class="score-list">
@@ -228,9 +228,9 @@
 
 
             <div class="btn-group modifier-btn" role="group" aria-label="">
-                <button type="button" class="btn btn-success send-score" @click="saveNewThrow()">New</button>
-                <button type="button" class="btn btn-success send-score save" @click="saveEditedThrow()">Save</button>
-                <button type="button" class="btn btn-danger score-edit-cancel" @click="cancelEditThrow()">Cancel</button>
+                <button type="button" class="btn btn-success send-score save" @click="saveEditedThrow()">Mentés</button>
+                <button type="button" class="btn btn-danger score-edit-cancel" @click="cancelEditThrow()">Mégsem</button>
+                <button type="button" class="btn btn-success send-score" @click="saveNewThrow()">Új</button>
             </div>
 
         </div>

@@ -109,26 +109,26 @@ h1 {
 }
 .big-score-box {
     display: block;
-    width: 100%;
-    padding-top: 2em;
-    padding-bottom: 2em;
+    /*width: 100%;*/
+    padding-top: 1em;
+    padding-bottom: 1em;
     /*            height: 410px;
             width: 500px;*/
 }
 .score-box {
     margin: 5px 10px;
     padding: 10px;
-    min-width: 175px;
-    height: 180px;
+    min-width: 125px;
+    height: 130px;
 }
 .score-box span {
     display: block;
 }
 .name {
-    font-size: 35pt;
+    font-size: 25pt;
 }
 .score {
-    font-size: 85pt;
+    font-size: 55pt;
 }
 .throws-line {
     display: flex;
@@ -140,8 +140,8 @@ h1 {
 .modifier-btn,
 /*.score-list,*/
 .send-score {
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 .score-list {
     margin-left: 10px;

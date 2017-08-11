@@ -54,7 +54,16 @@ func main() {
 
 	r.LoadHTMLFiles("scoreboards/awaiting.html",
 			"admin/start-game.html",
-			"admin/editthrow.html")
+			"admin/editthrow.html",
+			"admin/index.html")
+
+	r.GET("/", func(c *gin.Context) {
+		c.HTML(200, "index.html", gin.H{})
+	})
+	r.GET("/jatek", func(c *gin.Context) {
+		c.Redirect(301, "/admin/setPlayer")
+		return
+	})
 
 	g.GET("/scoreboard", func(c *gin.Context) {
 		if game.GetGame().Status == model.StatusCreate {

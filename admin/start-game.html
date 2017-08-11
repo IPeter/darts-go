@@ -93,7 +93,7 @@
 
     <div class="container" id="playerList">
         <div class="row">
-            <h1 style="text-align: center;">Start game</h1>
+            <h1 style="text-align: center;">Játékosok neve</h1>
         </div>
 
         <div class="row">
@@ -105,7 +105,7 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Player</th>
+                            <th>Játékos</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -121,7 +121,7 @@
             <div class="col-md-6" style="background-color: #4e5d6c;">
                 <form class="form-horizontal" v-on:submit.prevent="">
                     <fieldset>
-                        <legend>Add new Player</legend>
+                        <legend>Új játékos felvétele</legend>
                         <div class="form-group">
                             <label for="inputName" class="col-lg-2 control-label">Name</label>
                             <div class="col-lg-10">
@@ -141,31 +141,31 @@
 
         </div>
         <div class="row">
-            <h2 style="text-align: center;">Select game</h2>
+            <h2 style="text-align: center;">Válassz játék fajtát</h2>
         </div>
         <div style="display: flex; justify-content: center; margin-top: 50px;">
-            <button class="btn btn-lg" v-bind:class="{'btn-primary': selectedGame == '501'}" v-on:click="selectGame('501')">501</button>
-            <button class="btn btn-lg" v-bind:class="{'btn-primary': selectedGame == 'cricket'}" v-on:click="selectGame('cricket')">Cricket</button>
+            <button class="btn btn-default btn-lg" v-bind:class="{'btn-primary': selectedGame == '501'}" v-on:click="selectGame('501')">501</button>
+            <button class="btn btn-default btn-lg" v-bind:class="{'btn-primary': selectedGame == 'cricket'}" v-on:click="selectGame('cricket')">Cricket</button>
         </div>
         <div class="row">
-            <h3 style="text-align: center;">Set game options</h3>
+            <h3 style="text-align: center;">Játék specifikus beállítások</h3>
         </div>
 
         <div style="display: flex; justify-content: center; margin-top: 50px;" v-if="selectedGame == '501'">
-            <button class="btn btn-lg" v-bind:class="{'btn-primary': getGameOption('701')}" v-on:click="setGameOption('701', ['501', '301'])">701</button>
-            <button class="btn btn-lg" v-bind:class="{'btn-primary': getGameOption('501')}" v-on:click="setGameOption('501', ['701', '301'])">501</button>
-            <button class="btn btn-lg" v-bind:class="{'btn-primary': getGameOption('301')}" v-on:click="setGameOption('301', ['701', '501'])">301</button>
+            <button class="btn btn-default btn-lg" v-bind:class="{'btn-primary': getGameOption('701')}" v-on:click="setGameOption('701', ['501', '301'])">701</button>
+            <button class="btn btn-default btn-lg" v-bind:class="{'btn-primary': getGameOption('501')}" v-on:click="setGameOption('501', ['701', '301'])">501</button>
+            <button class="btn btn-default btn-lg" v-bind:class="{'btn-primary': getGameOption('301')}" v-on:click="setGameOption('301', ['701', '501'])">301</button>
         </div>
         <div style="display: flex; justify-content: center; margin-top: 50px;" v-if="selectedGame == '501'">
-            <button class="btn btn-lg" v-bind:class="{'btn-primary': getGameOption('doubleOut')}" v-on:click="setGameOption('doubleOut')">Double Out</button>
-            <button class="btn btn-lg" v-bind:class="{'btn-primary': !getGameOption('doubleOut')}" v-on:click="unsetGameOption('doubleOut')">Simple</button>
+            <button class="btn btn-default btn-lg" v-bind:class="{'btn-primary': getGameOption('doubleOut')}" v-on:click="setGameOption('doubleOut')">Dupla kiszálló</button>
+            <button class="btn btn-default btn-lg" v-bind:class="{'btn-primary': !getGameOption('doubleOut')}" v-on:click="unsetGameOption('doubleOut')">Sima</button>
         </div>
         <div style="display: flex; justify-content: center; margin-top: 50px;" v-if="selectedGame == 'cricket'">
-            <button class="btn btn-lg" v-bind:class="{'btn-primary': !getGameOption('cutThroat')}" v-on:click="unsetGameOption('cutThroat')">Simple</button>
-            <button class="btn btn-lg" v-bind:class="{'btn-primary': getGameOption('cutThroat')}" v-on:click="setGameOption('cutThroat')">Cut-throat</button>
+            <button class="btn btn-default btn-lg" v-bind:class="{'btn-primary': !getGameOption('cutThroat')}" v-on:click="unsetGameOption('cutThroat')">Sima</button>
+            <button class="btn btn-default btn-lg" v-bind:class="{'btn-primary': getGameOption('cutThroat')}" v-on:click="setGameOption('cutThroat')">Büntető (Cut-throat)</button>
         </div>
         <div style="display: flex; justify-content: center; margin-top: 50px;">
-            <button class="btn btn-lg btn-primary" @click="startGame">START GAME</button>
+            <button class="btn btn-lg btn-primary" @click="startGame">JÁTÉK INDÍTÁSA</button>
         </div>
     </div>
 
