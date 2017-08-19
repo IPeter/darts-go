@@ -18,6 +18,7 @@ const (
 	WebsocketInsertThrow  = "insert_throw"
 	WebsocketInsertDelete = "delete_throw"
 	WebsocketEditThrow    = "edit_throw"
+	WebsocketNextPlayer   = "next_player"
 	WebsocketFinishGame   = "finish"
 	WebsocketRestartGame  = "restart"
 )
@@ -103,9 +104,66 @@ func SetPlayer(player *model.Player, db *sql.DB) {
 	GetGame().SetPlayer(player)
 }
 
-func SkipRound() {
+func SkipRound(db *sql.DB) {
+	// save the -1 throw
+	thr := model.NewThrow(0, -1, 0, 0, "", "")
+	player := GetGame().GetCurrentPlayer()
+	player.SetThrow(thr)
+
+	sql_addthrow := `
+	INSERT INTO throws
+	( uuid, round_uid, score, modifier, x, y, cam1img, cam2img, cam1x, cam2x, edited_count, created)
+	values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+	`
+	stmtTh, errTh := db.Prepare(sql_addthrow)
+	if errTh != nil { panic(errTh) }
+	defer stmtTh.Close()
+
+	_, errTh2 := stmtTh.Exec(
+		thr.ID,
+		player.GetCurrentRound().ID,
+		0,
+		-1,
+		0,
+		0,
+		"",
+		"",
+		0,
+		0,
+		0)
+	if errTh2 != nil { panic(errTh2) }
+
+
 	GetGame().GetCurrentPlayer().IncRound()
+
+	sql_additem := `
+			INSERT INTO rounds
+			( uuid, game_uid, player_uid, created)
+			values(?, ?, ?, CURRENT_TIMESTAMP)
+			`
+	stmt, err := db.Prepare(sql_additem)
+	if err != nil { panic(err) }
+	defer stmt.Close()
+
+	_, err2 := stmt.Exec(
+		player.GetCurrentRound().ID,
+		GetGame().ID,
+		player.ID)
+	if err2 != nil { panic(err2) }
+
+
 	GetGame().NextPlayer()
+
+	jsonThr, _ := json.Marshal(struct {
+		Command  string       `json:"command"`
+		PlayerID string       `json:"playerId"`
+	}{
+		Command:  WebsocketNextPlayer,
+		PlayerID: GetGame().GetCurrentPlayer().ID,
+	})
+
+	websocket.BroadcastMsg(jsonThr)
+
 }
 
 func Throw(c *model.CamCommand, db *sql.DB) {
@@ -156,7 +214,9 @@ func Throw(c *model.CamCommand, db *sql.DB) {
 		0,
 		0,
 		0)
-	if err2 != nil { panic(err2) }
+	if err2 != nil {
+		panic(err2)
+	}
 
 
 	jsonThr, _ := json.Marshal(struct {

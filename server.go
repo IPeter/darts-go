@@ -31,7 +31,7 @@ func main() {
 		command := c.MustGet("command").(*model.CamCommand)
 
 		if command.Modifier == model.HandsOnBoard {
-			game.SkipRound()
+			game.SkipRound(db)
 		} else if command.Modifier == model.GameEndsWithWinner {
 			game.FinishGame()
 		} else {
