@@ -80,7 +80,7 @@
             <h2 style="text-align: center;">Indítsd el a játékot a mobil telefonodról</h2>
             <h3>Kérlek segítsd a rendszer fejlesztését azzal, hogy használod a mobil felületet és kijavítod a hibásan felismert dobásokat. A
             javításokat elmentjük és elemezzük, így fejlesztjük tovább a rendszert, hogy végül hiba nélkül használhasd!</h3>
-            <h3>A játék indító és hibajavító felület a <a href="http://localhost/jatek">http://192.168.1.2/jatek</a> címen érhető el a helyi wifire kapcsolódva (jelszó: "snooker forever"). Vagy olvasd le a vonalkódot.</h3>
+            <h3>A játék indító és hibajavító felület a <b>http://192.168.1.2/jatek</b> címen érhető el a helyi wifire kapcsolódva (jelszó: "snooker forever"). Vagy olvasd le a vonalkódot.</h3>
             <div id="qrcode" style="padding: 50px;background: white;margin-top:100px"></div>
         </div>
     </div>
@@ -88,7 +88,7 @@
     <script src="/assets/qrcode.min.js"></script>
     <script>
       var qrcode = new QRCode("qrcode", {
-          text: "http://"+window.location.hostname+':'+window.location.port+'/admin/setPlayer',
+          text: "http://"+window.location.hostname+'/admin/setPlayer',
           width: 256,
           height: 256,
           colorDark : "#000000",
